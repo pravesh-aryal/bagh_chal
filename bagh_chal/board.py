@@ -1,6 +1,8 @@
 import pygame
 import os
 
+"""Class to handle board coordinates and design"""
+
 
 class Board:
     def __init__(self, game_settings, window_rect) -> None:
@@ -14,18 +16,15 @@ class Board:
         # Place the Board at the center (as same as the window)
         self.rect.center = window_rect.center
 
-    def draw_lines(self) -> None:
-        pygame.draw.lines()
-
-    def generate_points(self, game_settings) -> None:
-        # Coordinate of top left corner of the game board in (x, y)
+    def generate_coordinates(self, game_settings) -> list:
+        # Coordinate of top left corner of the board in (x, y)
         starting_point = (self.rect.left, self.rect.top)
         length = game_settings.BOARD_WIDTH
 
         coordinates = []
         JUMP_VALUE = int(length / 4)
         x, y = starting_point
-
+        # Creating 5 * 5 matrix
         for i in range(0, 5):
             row = []
             for j in range(0, 5):
@@ -36,21 +35,24 @@ class Board:
             x += JUMP_VALUE
             y = starting_point[1]
 
-        # print(coordinates)
-        # coordinate for lines
-        CFL = []
-        for each_row in coordinates:
-            CFL.append((each_row[0], each_row[len(each_row) - 1]))
-        CFLF = []
-        index = 0
-        for i in range(0, 5):
-            CFL2 = []
-            for each_row in coordinates:
-                print(each_row[index])
-                CFL2.append(each_row[index])
+        return coordinates
 
-            CFLF.append(CFL2)
+    def points_for_lines(self, coordinates) -> tuple:
+
+        vertical_coordinates = []
+        horizontal_coordinates = []
+        index = 0
+        for each_row in coordinates:
+            vertical_coordinates.append((each_row[0], each_row[len(each_row) - 1]))
+        for i in range(0, 5):
+            _ = []
+            for each_row in coordinates:
+                _.append(each_row[index])
+
+            horizontal_coordinates.append(_)
             index += 1
 
-        print(CFLF)
-        return CFL, CFLF
+        return vertical_coordinates, horizontal_coordinates
+
+    def draw_lines(self) -> None:
+        pygame.draw.lines()

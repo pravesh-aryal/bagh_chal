@@ -15,3 +15,7 @@ class Settings:
 
         # lines settings
         self.LINE_COLOR = (0, 0, 0)
+
+        # Circle settings
+        self.CIRCLE_RADIUS = 32
+        self.CIRCLE_COLOR_DEFAULT = (220, 220, 220)
