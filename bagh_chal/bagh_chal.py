@@ -4,6 +4,7 @@ from board import Board
 from settings import Settings
 import game_mechanics as gm
 from circle import Circle
+from tiger import Tiger
 
 
 def start_game():
@@ -24,14 +25,31 @@ def start_game():
     board = Board(game_settings, window_rect)
     coordinates = board.generate_coordinates(game_settings)
     gm.initialize_board(window, game_settings, board, coordinates)
+    gm.generate_circles(window, game_settings, coordinates)
     # Create an instance of the class Circle
     circle = Circle(window, game_settings, coordinates)
+
+    # Create an instance of the class Tiger
+    tiger1 = Tiger(*board.rect.topleft)
+    tiger2 = Tiger(*board.rect.topright)
+    tiger3 = Tiger(*board.rect.bottomright)
+    tiger4 = Tiger(*board.rect.bottomleft)
+    tiger_group = pygame.sprite.Group()
+    tiger_group.add(tiger1, tiger2, tiger3, tiger4)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP:
-                print(pygame.mouse.get_pos())
+                # print(pygame.mouse.get_pos())
+                if tiger1.rect.collidepoint(pygame.mouse.get_pos()):
+                    print("the tiger is clicked")
+                    tiger1.is_selected = True
+                if tiger1.is_selected:
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        tiger1.rect.center = pygame.mouse.get_pos()
+        tiger_group.draw(window)
         pygame.display.flip()
 
 

@@ -17,5 +17,13 @@ class Settings:
         self.LINE_COLOR = (0, 0, 0)
 
         # Circle settings
-        self.CIRCLE_RADIUS = 32
+        self.CIRCLE_RADIUS = 40
         self.CIRCLE_COLOR_DEFAULT = (220, 220, 220)
+
+        self.board_config = [
+            ["t", "", "", "", "t"],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["t", "", "", "", "t"],
+        ]

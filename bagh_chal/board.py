@@ -1,5 +1,6 @@
 import pygame
 import os
+from circle import Circle
 
 """Class to handle board coordinates and design"""
 
@@ -56,3 +57,11 @@ class Board:
 
     def draw_lines(self) -> None:
         pygame.draw.lines()
+
+    def generate_circles(self, coordinates) -> None:
+        circles = []
+
+        for row_coordinates in coordinates:
+            for each_coordinate in row_coordinates:
+                # each_coordinate = center_of_each_cricle
+                circles.append(Circle(window, game_settings, each_coordinate))

@@ -1,5 +1,6 @@
 import sys
 import pygame
+from circle import Circle
 
 # from board import Board
 
@@ -29,8 +30,7 @@ def initialize_board(window, game_settings, board, coordinates) -> None:
             horizontal_coordinate[len(horizontal_coordinate) - 1],
             2,
         )
-    # pygame.draw.line(window, game_settings.LINE_COLOR, (0, 0), (800, 800), 3)
-    # pygame.draw.line(window, game_settings.LINE_COLOR, (0, 800), (800, 0), 3)
+
     create_diagnols(window, game_settings, coordinates, board.rect)
 
 
@@ -68,3 +68,12 @@ def create_diagnols(window, game_settings, coordinates, board_rect):
         ),
         3,
     )
+
+
+def generate_circles(self, window, game_settings, coordinates) -> None:
+    circles = []
+
+    for row_coordinates in coordinates:
+        for each_coordinate in row_coordinates:
+            # each_coordinate = center_of_each_cricle
+            circles.append(Circle(window, game_settings, each_coordinate))
