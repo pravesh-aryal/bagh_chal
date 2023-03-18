@@ -70,10 +70,13 @@ def create_diagnols(window, game_settings, coordinates, board_rect):
     )
 
 
-def generate_circles(self, window, game_settings, coordinates) -> None:
+def generate_circles(window, game_settings, coordinates) -> None:
     circles = []
 
     for row_coordinates in coordinates:
         for each_coordinate in row_coordinates:
             # each_coordinate = center_of_each_cricle
             circles.append(Circle(window, game_settings, each_coordinate))
+    print(len(circles))
+    for circle in circles:
+        print(circle.center)

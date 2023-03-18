@@ -26,8 +26,9 @@ def start_game():
     coordinates = board.generate_coordinates(game_settings)
     gm.initialize_board(window, game_settings, board, coordinates)
     gm.generate_circles(window, game_settings, coordinates)
+
     # Create an instance of the class Circle
-    circle = Circle(window, game_settings, coordinates)
+    # circle = Circle(window, game_settings, coordinates)
 
     # Create an instance of the class Tiger
     tiger1 = Tiger(*board.rect.topleft)
@@ -54,3 +55,4 @@ def start_game():
 
 
 start_game()
+# check the collidepoint for each circle
