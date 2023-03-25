@@ -25,7 +25,11 @@ def start_game():
     board = Board(game_settings, window_rect)
     coordinates = board.generate_coordinates(game_settings)
     gm.initialize_board(window, game_settings, board, coordinates)
-    gm.generate_circles(window, game_settings, coordinates)
+    circles = gm.generate_circles(window, game_settings, coordinates)
+    circle2 = circles[1]
+    circle2.color = (255, 0, 0)
+    print(circle2.color)
+    pygame.display.flip()
 
     # Create an instance of the class Circle
     # circle = Circle(window, game_settings, coordinates)
@@ -47,12 +51,22 @@ def start_game():
                 if tiger1.rect.collidepoint(pygame.mouse.get_pos()):
                     print("the tiger is clicked")
                     tiger1.is_selected = True
-                if tiger1.is_selected:
-                    if event.type == pygame.MOUSEBUTTONUP:
-                        tiger1.rect.center = pygame.mouse.get_pos()
+                    if tiger1.is_selected:
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            tiger1.rect.center = pygame.mouse.get_pos()
+                elif circle2.rect.collidepoint(pygame.mouse.get_pos()):
+                    print("the circle is clicked")
+                    circle2.clicked = True
+                    circle2.color = (0, 255, 0)
+
+                # gm.generate_circles(window, game_settings, coordinates)
+                # circle2.clicked = True
+                # if circle2.clicked:
         tiger_group.draw(window)
+        for circle in circles:
+            circle.draw(window)
+        tiger1.rect.center = pygame.mouse.get_pos()
         pygame.display.flip()
 
 
 start_game()
-# check the collidepoint for each circle

@@ -16,6 +16,16 @@ class Board:
 
         # Place the Board at the center (as same as the window)
         self.rect.center = window_rect.center
+        self.selected_piece = None
+
+        self.turn = "goat"  # goat always has the first turn
+        self.board_config = [
+            ["t", "", "", "", "t"],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["t", "", "", "", "t"],
+        ]
 
     def generate_coordinates(self, game_settings) -> list:
         # Coordinate of top left corner of the board in (x, y)
@@ -58,10 +68,5 @@ class Board:
     def draw_lines(self) -> None:
         pygame.draw.lines()
 
-    def generate_circles(self, coordinates) -> None:
-        circles = []
-
-        for row_coordinates in coordinates:
-            for each_coordinate in row_coordinates:
-                # each_coordinate = center_of_each_cricle
-                circles.append(Circle(window, game_settings, each_coordinate))
+    def setup_boad(self) -> None:
+        pass

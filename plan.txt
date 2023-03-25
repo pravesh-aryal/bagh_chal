@@ -1,0 +1,3 @@
+-> Create a scalable board. (Done)
+-> Create circles in each coordinate of the board (matrix) (Done)
+-> Make the circles clickable -they should change color when clicked-

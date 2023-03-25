@@ -77,6 +77,15 @@ def generate_circles(window, game_settings, coordinates) -> None:
         for each_coordinate in row_coordinates:
             # each_coordinate = center_of_each_cricle
             circles.append(Circle(window, game_settings, each_coordinate))
-    print(len(circles))
-    for circle in circles:
-        print(circle.center)
+    # print(len(circles))
+    print(circles[1])
+
+    return circles
+
+
+def remove():
+    pass
+
+
+# def update_circles(circles):
+#     for circle in circles:
