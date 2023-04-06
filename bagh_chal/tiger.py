@@ -16,11 +16,14 @@ class Tiger(Sprite):
         self.rect.center = pos_x, pos_y
         self.is_selected = False
 
-    def update(self, pos_x, pos_y):
-        self.rect.center = pos_x, pos_y
+    # def update(self, pos_x, pos_y):
+    #     self.rect.center = pos_x, pos_y
 
-    # def contains_tiger(self) -> bool:
-    #     pass
+    def draw(self):
+        pass
 
-    # def is_selected(self) -> bool:
-    #     pass
+    def get_possible_moves(self):
+        pass
+
+    def get_valid_moves(self):
+        pass
