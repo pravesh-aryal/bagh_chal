@@ -17,7 +17,9 @@ class Board:
 
         # Place the Board at the center (as same as the window)
         self.rect.center = window_rect.center
-        self.selected_piece = None
+        self.is_piece_selected = False
+        self.selected_circle = None
+        # self.circles = self.generate_circles()
         self.turn = "g"  # goat always has the first turn
         self.board_config = [
             ["t", "", "", "", "t"],
@@ -49,7 +51,6 @@ class Board:
         return coordinates
 
     def points_for_lines(self, coordinates) -> tuple:
-
         vertical_coordinates, horizontal_coordinates = [], []
         index = 0
         for each_row in coordinates:
@@ -71,30 +72,78 @@ class Board:
         pass
 
     def handle_click(self, mx, my, circles, window, game_settings, goat_group) -> None:
+        valid_move = True  # for testing purpose
         for circle in circles:
             if circle.rect.collidepoint(mx, my):
-                print("the circle is clicked")
-                if not circle.clicked and not circle.occupying_piece:
+                # check which piece the circle contains or is it empty?
+                # dont forget circle.draw(window)
+
+                self.set_default_color(circles, game_settings, window)
+                # circle.color = (
+                #     game_settings.CIRCLE_COLOR_CLICKED
+                #     if circle.clicked == False
+                #     else game_settings.CIRCLE_COLOR_DEFAULT
+                # )
+                if circle.clicked == False:
                     circle.color = game_settings.CIRCLE_COLOR_CLICKED
+                    self.set_bool(circles)
                     circle.clicked = True
-                    circle.occupying_piece = "g"
-                    goat_group.add(Goat(*circle.center))
-                elif not circle.clicked and circle.occupying_piece:
-                    if circle.occupying_piece == "t":
-                        pass
-                    else:
-                        pass
-                    pass
                 else:
                     circle.color = game_settings.CIRCLE_COLOR_DEFAULT
                     circle.clicked = False
                 circle.draw(window)
-                goat_group.draw(window)
-                print(goat_group)
-                # multiple circles cannot be highlighted at a time so we need to implement a logic for that
+
+    def set_default_color(self, circles, game_settings, window):
+        for circle in circles:
+            circle.color = game_settings.CIRCLE_COLOR_DEFAULT
+            # if circle.clicked == True:
+            #     circle.clicked = False
+
+            # else:
+            #     circle.clicked = True
+            circle.draw(window)
+
+    def set_bool(self, circles):
+        for circle in circles:
+            circle.clicked = False
 
     def draw(self):
         pass
 
     def update_board(self):
+        pass
+
+    def generate_circles(
+        window, game_settings, coordinates, tiger_group, goat_group
+    ) -> None:
+        circles = []
+
+        for row_coordinates in coordinates:
+            for each_coordinate in row_coordinates:
+                # each_coordinate = center_of_each_cricle
+                circles.append(
+                    Circle(
+                        window,
+                        game_settings,
+                        each_coordinate,
+                        tiger_group,
+                        goat_group,
+                    )
+                )
+
+        return circles
+
+    def get_circle_from_pos(self):
+        pass
+
+    def get_piece_from_pos(self):
+        pass
+
+    def setup_board(self):
+        pass
+
+    def draw(self):
+        pass
+
+    def tiger_clicked(self):
         pass

@@ -97,3 +97,7 @@ def remove():
 
 # def update_circles(circles):
 #     for circle in circles:
+
+
+def create_tigers():
+    pass

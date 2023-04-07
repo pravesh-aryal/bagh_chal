@@ -7,8 +7,6 @@ import game_mechanics as gm
 from circle import Circle
 from tiger import Tiger
 
-goat_group = pygame.sprite.Group()
-
 
 def start_game():
     pygame.init()
@@ -36,9 +34,12 @@ def start_game():
     tiger4 = Tiger(*board.rect.bottomleft)
     tiger_group = pygame.sprite.Group()
     tiger_group.add(tiger1, tiger2, tiger3, tiger4)
+    goat_group = pygame.sprite.Group()
+
     circles = gm.generate_circles(
         window, game_settings, coordinates, tiger_group, goat_group
     )
+
     while True:
         mx, my = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -47,12 +48,10 @@ def start_game():
             elif event.type == pygame.MOUSEBUTTONUP:
                 # On left-click
                 if event.button == 1:
-                    # print("left")
                     board.handle_click(
                         mx, my, circles, window, game_settings, goat_group
                     )
-                    for circle in circles:
-                        print(circle.occupying_piece)
+
                 # handling click
 
         tiger_group.draw(window)
