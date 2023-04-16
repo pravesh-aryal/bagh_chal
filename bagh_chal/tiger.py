@@ -15,6 +15,7 @@ class Tiger(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos_x, pos_y
         self.is_selected = False
+        self.notation = "t"
 
     # def update(self, pos_x, pos_y):
     #     self.rect.center = pos_x, pos_y

@@ -1,8 +1,10 @@
 import sys
 import pygame
 from circle import Circle
+from collections import OrderedDict
 
 # from board import Board
+# This has some "complex" implementation to abstract from the important code
 
 
 def check_events():
@@ -12,7 +14,7 @@ def check_events():
 def initialize_board(window, game_settings, board, coordinates) -> None:
     # Draw the main rectangle for the game board.
     pygame.draw.rect(window, game_settings.BOARD_COLOR, board.rect)
-    vertical_coordinates, horizontal_coordinates = board.points_for_lines(coordinates)
+    vertical_coordinates, horizontal_coordinates = points_for_lines(coordinates)
     for vertical_coordinate in vertical_coordinates:
         pygame.draw.line(
             window,
@@ -34,8 +36,20 @@ def initialize_board(window, game_settings, board, coordinates) -> None:
     create_diagnols(window, game_settings, coordinates, board.rect)
 
 
-def update_board():
-    pass
+def points_for_lines(coordinates) -> tuple:
+    vertical_coordinates, horizontal_coordinates = [], []
+    index = 0
+    for each_row in coordinates:
+        vertical_coordinates.append((each_row[0], each_row[len(each_row) - 1]))
+    for i in range(0, 5):
+        _ = []
+        for each_row in coordinates:
+            _.append(each_row[index])
+
+        horizontal_coordinates.append(_)
+        index += 1
+
+    return vertical_coordinates, horizontal_coordinates
 
 
 def create_diagnols(window, game_settings, coordinates, board_rect):
@@ -71,7 +85,9 @@ def create_diagnols(window, game_settings, coordinates, board_rect):
 
 
 def generate_circles(
-    window, game_settings, coordinates, tiger_group, goat_group
+    window,
+    game_settings,
+    coordinates,
 ) -> None:
     circles = []
 
@@ -83,8 +99,6 @@ def generate_circles(
                     window,
                     game_settings,
                     each_coordinate,
-                    tiger_group,
-                    goat_group,
                 )
             )
 
@@ -101,3 +115,62 @@ def remove():
 
 def create_tigers():
     pass
+
+
+def generate_coordinates(board, game_settings) -> list:
+    # Coordinate of top left corner of the board in (x, y)
+    starting_point = (board.rect.left, board.rect.top)
+    length = game_settings.BOARD_WIDTH
+
+    coordinates = []
+    JUMP_VALUE = int(length / 4)
+    x, y = starting_point
+    # Creating 5 * 5 matrix
+    for i in range(0, 5):
+        row = []
+        for j in range(0, 5):
+            row.append((x, y))
+            y += JUMP_VALUE
+
+        coordinates.append(row)
+        x += JUMP_VALUE
+        y = starting_point[1]
+
+    return coordinates
+
+
+def board_config(coordinates, circles):
+    config = []
+    for x, circle in zip(range(5), circles):
+        _ = []
+        for y in range(5):
+            _.append(
+                {
+                    "position": (x, y),
+                    "abs_position": coordinates[x][y],
+                    "circle": circle,
+                    "piece": None,
+                }
+            )
+        config.append(_)
+
+    return config
+
+
+def initialize_tigers(board, Tiger, board_config):
+    # tiger1 = Tiger(*board.rect.topleft)
+    # tiger2 = Tiger(*board.rect.topright)
+    # tiger3 = Tiger(*board.rect.bottomright)
+    # tiger4 = Tiger(*board.rect.bottomleft)
+    # tiger_group = pygame.sprite.Group()
+    # tiger_group.add(tiger1, tiger2, tiger3, tiger4)
+
+    for row in board_config:
+        for position in row:
+            if (
+                position.__getitem__("abs_position") == board.rect.topleft
+                or position.__getitem__("abs_position") == board.rect.topright
+                or position.__getitem__("abs_position") == board.rect.bottomright
+                or position.__getitem__("abs_position") == board.rect.bottomleft
+            ):
+                position["piece"] = Tiger(*position.__getitem__("abs_position"))

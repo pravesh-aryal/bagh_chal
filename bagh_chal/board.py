@@ -2,77 +2,44 @@ import pygame
 import os
 from circle import Circle
 from goats import Goat
+from tiger import Tiger
 
 """Class to handle board coordinates and design"""
 
 
 class Board:
-    def __init__(self, game_settings, window_rect) -> None:
+    def __init__(self, window, game_settings, window_rect, gm) -> None:
         self.rect = pygame.Rect(
             0,
             0,
             game_settings.BOARD_WIDTH,
             game_settings.BOARD_HEIGHT,
         )
-
+        self.goats = 20
         # Place the Board at the center (as same as the window)
         self.rect.center = window_rect.center
         self.is_piece_selected = False
         self.selected_circle = None
-        # self.circles = self.generate_circles()
         self.turn = "g"  # goat always has the first turn
-        self.board_config = [
-            ["t", "", "", "", "t"],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["t", "", "", "", "t"],
-        ]
-
-    def generate_coordinates(self, game_settings) -> list:
-        # Coordinate of top left corner of the board in (x, y)
-        starting_point = (self.rect.left, self.rect.top)
-        length = game_settings.BOARD_WIDTH
-
-        coordinates = []
-        JUMP_VALUE = int(length / 4)
-        x, y = starting_point
-        # Creating 5 * 5 matrix
-        for i in range(0, 5):
-            row = []
-            for j in range(0, 5):
-                row.append((x, y))
-                y += JUMP_VALUE
-
-            coordinates.append(row)
-            x += JUMP_VALUE
-            y = starting_point[1]
-
-        return coordinates
-
-    def points_for_lines(self, coordinates) -> tuple:
-        vertical_coordinates, horizontal_coordinates = [], []
-        index = 0
-        for each_row in coordinates:
-            vertical_coordinates.append((each_row[0], each_row[len(each_row) - 1]))
-        for i in range(0, 5):
-            _ = []
-            for each_row in coordinates:
-                _.append(each_row[index])
-
-            horizontal_coordinates.append(_)
-            index += 1
-
-        return vertical_coordinates, horizontal_coordinates
+        self.coordinates = gm.generate_coordinates(self, game_settings)
+        gm.initialize_board(window, game_settings, self, self.coordinates)
+        self.circles = gm.generate_circles(
+            window,
+            game_settings,
+            self.coordinates,
+        )
+        self.board_config = gm.board_config(self.coordinates, self.circles)
+        gm.initialize_tigers(self, Tiger, self.board_config)
+        self.update_board(self.board_config, window)
 
     def draw_lines(self) -> None:
         pygame.draw.lines()
 
-    def setup_boad(self) -> None:
-        pass
-
-    def handle_click(self, mx, my, circles, window, game_settings, goat_group) -> None:
+    def handle_click(
+        self, mx, my, circles, window, game_settings, goat_group, tiger_group
+    ) -> None:
         valid_move = True  # for testing purpose
+        # self.turn = self.get_turn()
         for circle in circles:
             if circle.rect.collidepoint(mx, my):
                 # check which piece the circle contains or is it empty?
@@ -92,6 +59,40 @@ class Board:
                     circle.color = game_settings.CIRCLE_COLOR_DEFAULT
                     circle.clicked = False
                 circle.draw(window)
+                if self.turn == "g" and self.goats:
+                    self.place_goat(circle, goat_group, window)
+                    print(circle.occupying_piece)
+                    # change the turn only if a valid move/placement is done.
+                    self.turn = self.get_turn()
+                    self.goats -= 1
+                elif self.turn == "t":
+                    # and the circle should also contain a tiger i.e contains_tiger = True || has_tiger = True
+                    # self.move_tiger(circle, tiger_group, window)
+                    print(circle.occupying_piece)
+                    # if the cirlce has a tiger,
+                    if circle.occupying_piece:
+                        global prev_circle
+                        prev_circle = circle
+                        # donot change the turn
+                    if not circle.occupying_piece:
+                        # after a valid move is done
+                        # print(
+                        #     circle.occupying_piece.rect.center,
+                        #     prev_circle.occupying_piece.rect.center,
+                        # )
+                        circle.occupying_piece = prev_circle.occupying_piece
+                        # circle.occupying_piece.rect.center = (
+                        #     prev_circle.occupying_piece.rect.center
+                        # )
+                        prev_circle.occupying_piece.rect.center = circle.rect.center
+
+                        prev_circle.occupying_piece = None
+                        tiger_group.draw(window)
+                        for tiger in tiger_group:
+                            print(tiger.rect.center)
+                    # change the turn only if a valid move/placement is done.
+                    # else:
+                    #     self.turn = self.get_turn()
 
     def set_default_color(self, circles, game_settings, window):
         for circle in circles:
@@ -107,43 +108,27 @@ class Board:
         for circle in circles:
             circle.clicked = False
 
-    def draw(self):
-        pass
+    def place_goat(self, circle, goat_group, window):
+        goat_group.add(
+            Goat(
+                *circle.center,
+            )
+        )
 
-    def update_board(self):
-        pass
+    def get_turn(self):
+        self.turn = "t" if self.turn == "g" else "g"
+        return self.turn
 
-    def generate_circles(
-        window, game_settings, coordinates, tiger_group, goat_group
-    ) -> None:
-        circles = []
+    def update_board(self, config, window):
+        tiger_group = pygame.sprite.Group()
+        goat_group = pygame.sprite.Group()
+        for each_row in config:
+            for each_piece in each_row:
+                if each_piece["piece"]:
+                    if each_piece["piece"].notation == "t":
+                        tiger_group.add(each_piece["piece"])
+                    elif each_piece["piece"].notation == "g":
+                        goat_group.add(each_piece["piece"])
 
-        for row_coordinates in coordinates:
-            for each_coordinate in row_coordinates:
-                # each_coordinate = center_of_each_cricle
-                circles.append(
-                    Circle(
-                        window,
-                        game_settings,
-                        each_coordinate,
-                        tiger_group,
-                        goat_group,
-                    )
-                )
-
-        return circles
-
-    def get_circle_from_pos(self):
-        pass
-
-    def get_piece_from_pos(self):
-        pass
-
-    def setup_board(self):
-        pass
-
-    def draw(self):
-        pass
-
-    def tiger_clicked(self):
-        pass
+        tiger_group.draw(window)
+        goat_group.draw(window)

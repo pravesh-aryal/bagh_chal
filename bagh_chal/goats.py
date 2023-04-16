@@ -9,6 +9,7 @@ class Goat(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos_x, pos_y
         self.is_selected = False
+        self.notation = "g"
 
     def get_possible_moves(self):
         pass
