@@ -7,7 +7,7 @@ from pygame.sprite import Sprite
 
 
 class Tiger(Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, x, y):
         """Initialize the tiger pieces and set their starting position"""
         super(Tiger, self).__init__()
         # self.image = pygame.image.load(os.path.join(path, "images", "tiger.png"))
@@ -16,6 +16,7 @@ class Tiger(Sprite):
         self.rect.center = pos_x, pos_y
         self.is_selected = False
         self.notation = "t"
+        self.x, self.y = (x, y)
 
     # def update(self, pos_x, pos_y):
     #     self.rect.center = pos_x, pos_y

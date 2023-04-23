@@ -88,17 +88,23 @@ def generate_circles(
     window,
     game_settings,
     coordinates,
+    tiger_group,
+    goat_group,
 ) -> None:
     circles = []
 
-    for row_coordinates in coordinates:
-        for each_coordinate in row_coordinates:
+    for row_coordinates, x in zip(coordinates, range(5)):
+        for each_coordinate, y in zip(row_coordinates, range(5)):
             # each_coordinate = center_of_each_cricle
             circles.append(
                 Circle(
                     window,
                     game_settings,
                     each_coordinate,
+                    tiger_group,
+                    goat_group,
+                    x,
+                    y,
                 )
             )
 
@@ -158,13 +164,6 @@ def board_config(coordinates, circles):
 
 
 def initialize_tigers(board, Tiger, board_config):
-    # tiger1 = Tiger(*board.rect.topleft)
-    # tiger2 = Tiger(*board.rect.topright)
-    # tiger3 = Tiger(*board.rect.bottomright)
-    # tiger4 = Tiger(*board.rect.bottomleft)
-    # tiger_group = pygame.sprite.Group()
-    # tiger_group.add(tiger1, tiger2, tiger3, tiger4)
-
     for row in board_config:
         for position in row:
             if (
@@ -173,4 +172,7 @@ def initialize_tigers(board, Tiger, board_config):
                 or position.__getitem__("abs_position") == board.rect.bottomright
                 or position.__getitem__("abs_position") == board.rect.bottomleft
             ):
-                position["piece"] = Tiger(*position.__getitem__("abs_position"))
+                position["piece"] = Tiger(
+                    *position.__getitem__("abs_position"),
+                    *(position.__getitem__("position")),
+                )

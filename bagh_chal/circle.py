@@ -7,9 +7,11 @@ from pygame.sprite import Sprite
 
 # every circle is a rect object modified to visualize as a circle
 class Circle(Sprite):
-    def __init__(self, window, game_settings, center):
+    def __init__(self, window, game_settings, center, tiger_group, goat_group, x, y):
         super(Circle, self).__init__()
-        self.center = center
+        self.x = x
+        self.y = y
+        self.center = center  # abs_x, abs_y
         self.clicked = False
         self.rect = pygame.Rect(*center, 80, 80)
         self.rect.center = center
@@ -26,7 +28,7 @@ class Circle(Sprite):
         self.occupying_piece = None
         self.highlight = False
         self.coordinate = self.get_coordinate()
-        # self.check_for_occupancy(tiger_group, goat_group)
+        self.check_for_occupancy(tiger_group, goat_group)
 
     def draw(self, window):
         pygame.draw.rect(

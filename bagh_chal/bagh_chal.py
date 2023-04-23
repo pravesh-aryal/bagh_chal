@@ -24,7 +24,7 @@ def start_game():
 
     # Create an instance of the class Board
     board = Board(window, game_settings, window_rect, gm)
-
+    #
     while True:
         mx, my = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -34,7 +34,10 @@ def start_game():
                 # On left-click
                 if event.button == 1:
                     board.handle_click(
-                        mx, my, circles, window, game_settings, goat_group, tiger_group
+                        mx,
+                        my,
+                        window,
+                        game_settings,
                     )
 
                 # handling click
