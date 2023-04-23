@@ -176,3 +176,36 @@ def initialize_tigers(board, Tiger, board_config):
                     *position.__getitem__("abs_position"),
                     *(position.__getitem__("position")),
                 )
+
+
+def classify_coordinates(board_config):
+    restricted_coordinates = []
+    non_restricted_coordinates = []
+
+    for row in board_config:
+        for coordinate in row:
+            # coordinate is a dict
+            x, y = coordinate["position"]
+            # if x and y both are even or both are odd, it is a non_restricted coordinate
+            # sum of two even numbers or odd numbers is always even
+            if (x + y) % 2 == 0:
+                non_restricted_coordinates.append(coordinate)
+            else:
+                restricted_coordinates.append(coordinate)
+
+    # now defining neighbours for each restricted or non restricted coordinate/position
+    print(restricted_coordinates)
+    for coordinate in restricted_coordinates:
+        valid_neighbours = []
+        base_x, base_y = coordinate["position"]
+        for coordinate in board_config:
+            if (
+                coordinate["position"] == (base_x + 1, base_y)
+                or coordinate["position"] == (base_x, base_y + 1)
+                or coordinate["position"] == (base_x - 1, base_y)
+                or coordinate["position"] == (base_x, base_y - 1)
+            ):
+                valid_neighbours.append(coordinate)
+        coordinate["valid_neighbours"] = valid_neighbours
+
+    print("these are", restricted_coordinates)

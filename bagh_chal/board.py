@@ -35,6 +35,7 @@ class Board:
         )
         self.board_config = gm.board_config(self.coordinates, self.circles)
         gm.initialize_tigers(self, Tiger, self.board_config)
+        gm.classify_coordinates(self.board_config)
         self.update_board(self.board_config, window)
 
     def handle_click(self, mx, my, window, game_settings) -> None:
@@ -66,7 +67,6 @@ class Board:
                     elif self.move_tiger(circle, window, circle.x, circle.y):
                         self.turn = self.get_turn()
                     elif self.selected_piece is not None:
-                        print("not none")
                         pass
 
                     # if the cirlce has a tiger,
@@ -165,7 +165,6 @@ class Board:
                         t_count += 1
                     elif each_piece["piece"].notation == "g":
                         self.goat_group.add(each_piece["piece"])
-        print(len(self.tiger_group), "t count is", t_count)
-        print(len(self.goat_group))
+
         self.tiger_group.draw(window)
         self.goat_group.draw(window)
