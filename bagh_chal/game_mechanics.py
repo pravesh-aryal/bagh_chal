@@ -2,6 +2,7 @@ import sys
 import pygame
 from circle import Circle
 from collections import OrderedDict
+from itertools import chain
 
 # from board import Board
 # This has some "complex" implementation to abstract from the important code
@@ -194,11 +195,12 @@ def classify_coordinates(board_config):
                 restricted_coordinates.append(coordinate)
 
     # now defining neighbours for each restricted or non restricted coordinate/position
-    print(restricted_coordinates)
-    for coordinate in restricted_coordinates:
+
+    print([c["position"] for c in restricted_coordinates])
+    for coordinatee in restricted_coordinates:
         valid_neighbours = []
-        base_x, base_y = coordinate["position"]
-        for coordinate in board_config:
+        base_x, base_y = coordinatee["position"]
+        for coordinate in chain(*board_config):
             if (
                 coordinate["position"] == (base_x + 1, base_y)
                 or coordinate["position"] == (base_x, base_y + 1)
@@ -206,6 +208,24 @@ def classify_coordinates(board_config):
                 or coordinate["position"] == (base_x, base_y - 1)
             ):
                 valid_neighbours.append(coordinate)
-        coordinate["valid_neighbours"] = valid_neighbours
+        coordinatee["valid_neighbours"] = valid_neighbours
+        print(coordinatee["position"], [x["position"] for x in valid_neighbours])
+        print("break")
+    for coordinatee in non_restricted_coordinates:
+        valid_neighbours = []
+        base_x, base_y = coordinatee["position"]
 
-    print("these are", restricted_coordinates)
+        for coordinate in chain(*board_config):
+            if (
+                coordinate["position"] == (base_x + 1, base_y)
+                or coordinate["position"] == (base_x, base_y + 1)
+                or coordinate["position"] == (base_x - 1, base_y)
+                or coordinate["position"] == (base_x, base_y - 1)
+                or coordinate["position"] == (base_x - 1, base_y - 1)
+                or coordinate["position"] == (base_x + 1, base_y + 1)
+                or coordinate["position"] == (base_x - 1, base_y + 1)
+                or coordinate["position"] == (base_x + 1, base_y - 1)
+            ):
+                valid_neighbours.append(coordinate)
+        coordinatee["valid_neighbours"] = valid_neighbours
+        print(coordinatee["position"], [x["position"] for x in valid_neighbours])
