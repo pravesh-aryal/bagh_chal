@@ -11,6 +11,7 @@ class Board:
     def __init__(self, window, game_settings, window_rect, gm) -> None:
         self.tiger_group = pygame.sprite.Group()
         self.goat_group = pygame.sprite.Group()
+        self.tigers_trapped = 0
         self.rect = pygame.Rect(
             0,
             0,
@@ -34,69 +35,60 @@ class Board:
             self.goat_group,
         )
         self.board_config = gm.board_config(self.coordinates, self.circles)
+        # self.check_for_occupancy(self.board_config, self.circles)
         gm.initialize_tigers(self, Tiger, self.board_config)
-        gm.classify_coordinates(self.board_config)
+        (
+            self.restricted_positions,
+            self.unrestricted_positions,
+        ) = gm.classify_coordinates(self.board_config)
         self.update_board(self.board_config, window)
+
+    # def check_for_occupancy(self, board_config, circles):
+    #     for each_row in board_config:
+    #         for each_position in each_row:
+    #             self.occupying_piece = board_config["piece"]
 
     def handle_click(self, mx, my, window, game_settings) -> None:
         for circle in self.circles:
             if circle.rect.collidepoint(mx, my):
+                """LEAVE OUT THE HIGHLIGHT COLOR LOGIC FOR SOME TIME"""
                 self.set_default_color(self.circles, game_settings, window)
+                # if circle.occupying_piece is not None and self.selected_circle is None:
+                #     print("HEMLO")
+                #     self.selected_circle = circle
+                #     self.selected_circle.color = game_settings.CIRCLE_COLOR_CLICKED
+                #     self.selected_circle.draw(window)
 
-                # if circle.clicked == False:
-                #     circle.color = game_settings.CIRCLE_COLOR_CLICKED
-                #     self.set_bool(self.circles)
-                #     circle.clicked = True
-                # else:
-                #     circle.color = game_settings.CIRCLE_COLOR_DEFAULT
-                #     circle.clicked = False
-                # circle.draw(window)
+                # elif (
+                #     circle.occupying_piece is not None
+                #     and self.selected_circle is not None
+                # ):
+                #     self.selected_circle = None
+                #     self.selected_circle.color = game_settings.CIRCLE_COLOR_DEFAULT
+                #     self.selected_circle.draw(window)
+
                 if self.turn == "g" and self.goats:
                     self.place_goat(circle, self.goat_group, window, circle.x, circle.y)
                     # change the turn only if a valid move/placement is done.
                     self.turn = self.get_turn()
                     self.goats -= 1
+                elif self.turn == "g" and not self.goats:
+                    """MOVE EM GOATS baby"""
+                    pass
                 elif self.turn == "t":
                     # and the circle should also contain a tiger i.e contains_tiger = True || has_tiger = True
                     if self.selected_piece is None:
                         circle.occupying_piece = self.board_config[circle.x][circle.y][
                             "piece"
                         ]
-                        # prev_circle = circle
+                        global previous_circle
+                        previous_circle = circle
                         self.selected_piece = circle.occupying_piece
                     elif self.move_tiger(circle, window, circle.x, circle.y):
                         self.turn = self.get_turn()
                     elif self.selected_piece is not None:
                         pass
 
-                    # if the cirlce has a tiger,
-                    # if circle.occupying_piece:
-                    #     global prev_circle
-                    #     prev_circle = circle
-                    #     # donot change the turn
-                    # if not circle.occupying_piece:
-                    #     pass
-
-                # circle.occupying_piece = prev_circle.occupying_piece
-                # circle.occupying_piece.rect.center = (
-                #     prev_circle.occupying_piece.rect.center
-                # )
-                # prev_circle.occupying_piece.rect.center = circle.rect.center
-
-                # clicked_circle = circle
-
-                # clicked_circle.check_for_occupancy(self.tiger_group, self.goat_group)
-                # print("hey")
-                # if self.selected_piece is None:
-                #     if clicked_circle.occupying_piece is not None:
-                #         self.selected_piece = clicked_circle.occupying_piece
-                #         piece = self.get_piece(circle)
-                #         self.update_board(self.board_config, window)
-                # elif self.selected_piece is not None:
-                #     self.selected_piece = clicked_circle.occupying_piece
-                #     self.update_board(self.board_config, window)
-        # self.tiger_group.draw(window)
-        # self.goat_group.draw(window)
         self.update_board(self.board_config, window)
 
     def move_tiger(self, circle, window, x, y):
@@ -110,15 +102,38 @@ class Board:
         #         }"""
         # self.update_board(self.board_config, window)
         # return True
-        tiger = Tiger(*circle.center, x, y)
-        self.tiger_group.add(tiger)
-        self.board_config[x][y]["position"] = (x, y)
-        self.board_config[x][y]["abs_position"] = circle.center
-        self.board_config[x][y]["circle"] = circle
-        self.board_config[x][y]["piece"] = tiger
-        circle.occupying_piece = tiger
-        self.update_board(self.board_config, window)
-        return True
+
+        for position in self.restricted_positions:
+            if (previous_circle.x, previous_circle.y) == position["position"]:
+                valid_moves = position["valid_neighbours"]
+
+        for position in self.unrestricted_positions:
+            if (previous_circle.x, previous_circle.y) == position["position"]:
+                valid_moves = position["valid_neighbours"]
+
+        if (circle.x, circle.y) in [
+            valid_move["position"] for valid_move in valid_moves
+        ] and circle.occupying_piece == None:
+            for each_tiger in self.tiger_group:
+                if (each_tiger.x, each_tiger.y) == (
+                    previous_circle.x,
+                    previous_circle.y,
+                ):
+                    self.tiger_group.remove(each_tiger)
+                    self.board_config[previous_circle.x][previous_circle.y][
+                        "piece"
+                    ] = None
+                    previous_circle.occupying_piece = None
+            tiger = Tiger(*circle.center, x, y)
+            self.tiger_group.add(tiger)
+            self.board_config[x][y]["position"] = (x, y)
+            self.board_config[x][y]["abs_position"] = circle.center
+            self.board_config[x][y]["circle"] = circle
+            self.board_config[x][y]["piece"] = tiger
+            circle.occupying_piece = tiger
+            self.update_board(self.board_config, window)
+            self.selected_piece = None
+            return True
 
     def get_piece(self, circle):
         for _ in self.board_config:
@@ -161,7 +176,6 @@ class Board:
                 if each_piece["piece"]:
                     if each_piece["piece"].notation == "t":
                         self.tiger_group.add(each_piece["piece"])
-                        print(each_piece["piece"])
                         t_count += 1
                     elif each_piece["piece"].notation == "g":
                         self.goat_group.add(each_piece["piece"])

@@ -7,7 +7,9 @@ from pygame.sprite import Sprite
 
 # every circle is a rect object modified to visualize as a circle
 class Circle(Sprite):
-    def __init__(self, window, game_settings, center, tiger_group, goat_group, x, y):
+    def __init__(
+        self, window, game_settings, center, tiger_group, goat_group, x, y, board_config
+    ):
         super(Circle, self).__init__()
         self.x = x
         self.y = y
@@ -28,7 +30,7 @@ class Circle(Sprite):
         self.occupying_piece = None
         self.highlight = False
         self.coordinate = self.get_coordinate()
-        self.check_for_occupancy(tiger_group, goat_group)
+        # self.check_for_occupancy()
 
     def draw(self, window):
         pygame.draw.rect(
@@ -42,13 +44,7 @@ class Circle(Sprite):
     def get_coordinate(self):
         pass
 
-    def check_for_occupancy(self, tiger_group, goat_group):
-        if tiger_group:
-            for tiger in tiger_group:
-                if self.rect.center == tiger.rect.center:
-                    self.occupying_piece = tiger
-
-        if goat_group:
-            for goat in goat_group:
-                if self.rect.center == goat.rect.center:
-                    self.occupying_piece = goat
+    # def check_for_occupancy(self, board_config):
+    #     for each_row in board_config:
+    #         for each_position in each_row:
+    #             self.occupying_piece = board_config["piece"]

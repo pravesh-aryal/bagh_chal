@@ -4,6 +4,8 @@ from circle import Circle
 from collections import OrderedDict
 from itertools import chain
 
+# from typing import Dict
+
 # from board import Board
 # This has some "complex" implementation to abstract from the important code
 
@@ -106,6 +108,7 @@ def generate_circles(
                     goat_group,
                     x,
                     y,
+                    board_config,
                 )
             )
 
@@ -196,7 +199,6 @@ def classify_coordinates(board_config):
 
     # now defining neighbours for each restricted or non restricted coordinate/position
 
-    print([c["position"] for c in restricted_coordinates])
     for coordinatee in restricted_coordinates:
         valid_neighbours = []
         base_x, base_y = coordinatee["position"]
@@ -209,8 +211,7 @@ def classify_coordinates(board_config):
             ):
                 valid_neighbours.append(coordinate)
         coordinatee["valid_neighbours"] = valid_neighbours
-        print(coordinatee["position"], [x["position"] for x in valid_neighbours])
-        print("break")
+
     for coordinatee in non_restricted_coordinates:
         valid_neighbours = []
         base_x, base_y = coordinatee["position"]
@@ -228,4 +229,5 @@ def classify_coordinates(board_config):
             ):
                 valid_neighbours.append(coordinate)
         coordinatee["valid_neighbours"] = valid_neighbours
-        print(coordinatee["position"], [x["position"] for x in valid_neighbours])
+
+    return restricted_coordinates, non_restricted_coordinates
