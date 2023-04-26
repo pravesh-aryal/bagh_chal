@@ -11,6 +11,7 @@ class Goat(Sprite):
         self.is_selected = False
         self.notation = "g"
         self.x, self.y = (x, y)
+        self.valid_moves_for_goat = None
 
     def get_possible_moves(self):
         pass

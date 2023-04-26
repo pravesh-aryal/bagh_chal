@@ -1,9 +1,25 @@
-from itertools import chain
+# circles = [1, 2, 3, 4, 5, 6]
+# board_config = [
+#     ["a", "b"],
+#     ["c", "d"],
+#     ["e", "f"],
+# ]
+# from itertools import chain
 
-a = [[i * 5 + j + 1 for j in range(5)] for i in range(5)]
-print(a)
-x = chain(*a)
 
-print((x))
-for each in x:
-    print(each)
+# for circle, x in zip(circles, chain(*board_config)):
+#     print(circle, x)
+
+# for circle in circles:
+#     print(circle)
+
+# for x in chain(*board_config):
+#     print(x)
+
+
+def hey(x, y):
+    print(x, y)
+
+
+t = (1, 2)
+hey(*t)

@@ -1,8 +1,8 @@
 import sys
 import pygame
 from circle import Circle
-from collections import OrderedDict
 from itertools import chain
+from position import Position
 
 # from typing import Dict
 
@@ -93,7 +93,7 @@ def generate_circles(
     coordinates,
     tiger_group,
     goat_group,
-) -> None:
+) -> list:
     circles = []
 
     for row_coordinates, x in zip(coordinates, range(5)):
@@ -113,18 +113,6 @@ def generate_circles(
             )
 
     return circles
-
-
-def remove():
-    pass
-
-
-# def update_circles(circles):
-#     for circle in circles:
-
-
-def create_tigers():
-    pass
 
 
 def generate_coordinates(board, game_settings) -> list:
@@ -150,17 +138,18 @@ def generate_coordinates(board, game_settings) -> list:
 
 
 def board_config(coordinates, circles):
+    # create Position object for each position
     config = []
     for x, circle in zip(range(5), circles):
         _ = []
         for y in range(5):
             _.append(
-                {
-                    "position": (x, y),
-                    "abs_position": coordinates[x][y],
-                    "circle": circle,
-                    "piece": None,
-                }
+                Position(
+                    x,
+                    y,
+                    *coordinates[x][y],
+                    circle,
+                )
             )
         config.append(_)
 
@@ -168,66 +157,67 @@ def board_config(coordinates, circles):
 
 
 def initialize_tigers(board, Tiger, board_config):
+    # new
     for row in board_config:
         for position in row:
-            if (
-                position.__getitem__("abs_position") == board.rect.topleft
-                or position.__getitem__("abs_position") == board.rect.topright
-                or position.__getitem__("abs_position") == board.rect.bottomright
-                or position.__getitem__("abs_position") == board.rect.bottomleft
-            ):
-                position["piece"] = Tiger(
-                    *position.__getitem__("abs_position"),
-                    *(position.__getitem__("position")),
+            if position.abs_position in [
+                board.rect.topleft,
+                board.rect.topright,
+                board.rect.bottomleft,
+                board.rect.bottomright,
+            ]:
+                position.piece = Tiger(
+                    *position.abs_position,
+                    *position.position,
                 )
 
 
 def classify_coordinates(board_config):
-    restricted_coordinates = []
-    non_restricted_coordinates = []
+    # new
+    restricted_positions = []
+    unrestricted_positions = []
 
     for row in board_config:
-        for coordinate in row:
-            # coordinate is a dict
-            x, y = coordinate["position"]
-            # if x and y both are even or both are odd, it is a non_restricted coordinate
-            # sum of two even numbers or odd numbers is always even
+        for position in row:
+            # position is an obj
+            x, y = position.coordinate
             if (x + y) % 2 == 0:
-                non_restricted_coordinates.append(coordinate)
+                unrestricted_positions.append(position)
             else:
-                restricted_coordinates.append(coordinate)
+                restricted_positions.append(position)
 
-    # now defining neighbours for each restricted or non restricted coordinate/position
-
-    for coordinatee in restricted_coordinates:
+    # now defining neighbours for each of the two positions
+    for restricted_position in restricted_positions:
         valid_neighbours = []
-        base_x, base_y = coordinatee["position"]
-        for coordinate in chain(*board_config):
-            if (
-                coordinate["position"] == (base_x + 1, base_y)
-                or coordinate["position"] == (base_x, base_y + 1)
-                or coordinate["position"] == (base_x - 1, base_y)
-                or coordinate["position"] == (base_x, base_y - 1)
-            ):
-                valid_neighbours.append(coordinate)
-        coordinatee["valid_neighbours"] = valid_neighbours
+        base_x, base_y = restricted_position.position
+        for position in chain(*board_config):
+            if position.position in [
+                (base_x + 1, base_y),
+                (base_x, base_y + 1),
+                (base_x - 1, base_y),
+                (base_x, base_y - 1),
+            ]:
+                valid_neighbours.append(position)
 
-    for coordinatee in non_restricted_coordinates:
+        restricted_position.valid_neighbours = valid_neighbours
+
+    for unrestricted_position in unrestricted_positions:
         valid_neighbours = []
-        base_x, base_y = coordinatee["position"]
+        base_x, base_y = unrestricted_position.position
 
-        for coordinate in chain(*board_config):
-            if (
-                coordinate["position"] == (base_x + 1, base_y)
-                or coordinate["position"] == (base_x, base_y + 1)
-                or coordinate["position"] == (base_x - 1, base_y)
-                or coordinate["position"] == (base_x, base_y - 1)
-                or coordinate["position"] == (base_x - 1, base_y - 1)
-                or coordinate["position"] == (base_x + 1, base_y + 1)
-                or coordinate["position"] == (base_x - 1, base_y + 1)
-                or coordinate["position"] == (base_x + 1, base_y - 1)
-            ):
-                valid_neighbours.append(coordinate)
-        coordinatee["valid_neighbours"] = valid_neighbours
+        for position in chain(*board_config):
+            if position.position in [
+                (base_x + 1, base_y),
+                (base_x, base_y + 1),
+                (base_x - 1, base_y),
+                (base_x, base_y - 1),
+                (base_x + 1, base_y + 1),
+                (base_x + 1, base_y - 1),
+                (base_x - 1, base_y + 1),
+                (base_x - 1, base_y - 1),
+            ]:
+                valid_neighbours.append(position)
 
-    return restricted_coordinates, non_restricted_coordinates
+        unrestricted_position.valid_neighbours = valid_neighbours
+
+    return restricted_positions, unrestricted_positions

@@ -17,6 +17,7 @@ class Tiger(Sprite):
         self.is_selected = False
         self.notation = "t"
         self.x, self.y = (x, y)
+        self.abs_x, self.abs_y = pos_x, pos_y
 
     # def update(self, pos_x, pos_y):
     #     self.rect.center = pos_x, pos_y
