@@ -15,6 +15,7 @@ class Circle(Sprite):
         self.y = y
         self.center = center  # abs_x, abs_y
         self.clicked = False
+        self.highlight = False
         self.rect = pygame.Rect(*center, 80, 80)
         self.rect.center = center
         # self.color = (
@@ -25,17 +26,19 @@ class Circle(Sprite):
         self.color = game_settings.CIRCLE_COLOR_DEFAULT
         self.image = ""
         # self.highlight_color = game_settings.CIRCLE_COLOR_CLICKED
-        self.draw(window)
+        self.draw(window, game_settings)
 
         self.occupying_piece = None
         self.highlight = False
         self.coordinate = self.get_coordinate()
         # self.check_for_occupancy()
 
-    def draw(self, window):
+    def draw(self, window, game_settings):
         pygame.draw.rect(
             window,
-            self.color,
+            game_settings.CIRCLE_COLOR_DEFAULT
+            if self.highlight == False
+            else game_settings.CIRCLE_COLOR_CLICKED,
             self.rect,
             0,
             75,

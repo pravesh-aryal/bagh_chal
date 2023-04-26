@@ -41,6 +41,7 @@ def start_game():
                     )
 
                 # handling click
+        # board.draw(window, game_settings)
         pygame.display.flip()
 
 

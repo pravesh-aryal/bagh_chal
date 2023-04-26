@@ -10,8 +10,8 @@ class Board:
     """Class to handle board coordinates and design"""
 
     def __init__(self, window, game_settings, window_rect, gm) -> None:
-        self.tiger_group = pygame.sprite.Group()
-        self.goat_group = pygame.sprite.Group()
+        self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
+        self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
         self.tigers_trapped = 0
         self.goats = 20
         self.rect = pygame.Rect(
@@ -53,6 +53,7 @@ class Board:
 
                 if self.turn == "g" and self.goats:
                     self.place_goat(circle, self.goat_group, window, circle.x, circle.y)
+
                     # change the turn only if a valid move/placement is done.
 
                 elif self.turn == "g" and not self.goats:
@@ -64,54 +65,29 @@ class Board:
                         circle.occupying_piece = self.board_config[circle.x][
                             circle.y
                         ].piece
+                        self.selected_circle = circle
                         global previous_circle
                         previous_circle = circle
+                        previous_circle.clicked = True
                         self.selected_piece = circle.occupying_piece
-                    elif self.move_tiger(circle, window, circle.x, circle.y):
+
+                    elif self.selected_piece.move(
+                        self,
+                        circle,
+                        window,
+                        circle.x,
+                        circle.y,
+                        game_settings,
+                        previous_circle,
+                        Tiger,
+                    ):
                         self.turn = self.get_turn()
-                    elif self.selected_piece is not None:
-                        pass
+
+                    elif circle.occupying_piece is not None:
+                        if circle.occupying_piece.notation == self.turn:
+                            self.selected_piece = circle.occupying_piece
 
         self.update_board(self.board_config, window)
-
-    def move_tiger(self, circle, window, x, y):
-        for position in self.restricted_positions:
-            if (previous_circle.x, previous_circle.y) == position.position:
-                valid_moves = position.valid_neighbours
-
-        for position in self.unrestricted_positions:
-            if (previous_circle.x, previous_circle.y) == position.position:
-                valid_moves = position.valid_neighbours
-
-        # self.eat_goats(
-        #     circle,
-        #     previous_circle,
-        #     window,
-        #     x,
-        #     y,
-        #     valid_moves,
-        # )
-        if (circle.x, circle.y) in [
-            valid_move.position for valid_move in valid_moves
-        ] and circle.occupying_piece == None:
-            for each_tiger in self.tiger_group:
-                if (each_tiger.x, each_tiger.y) == (
-                    previous_circle.x,
-                    previous_circle.y,
-                ):
-                    self.tiger_group.remove(each_tiger)
-                    self.board_config[previous_circle.x][previous_circle.y].piece = None
-                    previous_circle.occupying_piece = None
-            tiger = Tiger(*circle.center, x, y)
-            self.tiger_group.add(tiger)
-            self.board_config[x][y].position = (x, y)
-            self.board_config[x][y].abs_position = circle.center
-            self.board_config[x][y].circle = circle
-            self.board_config[x][y].piece = tiger
-            circle.occupying_piece = tiger
-            self.update_board(self.board_config, window)
-            self.selected_piece = None
-            return True
 
     def get_piece(self, circle):
         for _ in self.board_config:
@@ -127,7 +103,7 @@ class Board:
 
             # else:
             #     circle.clicked = True
-            circle.draw(window)
+            circle.draw(window, game_settings)
 
     def set_bool(self, circles):
         for circle in circles:
@@ -167,6 +143,19 @@ class Board:
     # def check_for_occupancy(self, board_config, circles):
     #     for circle, position in zip(circles, chain(*board_config)):
     #         circle.occupying_piece = position["piece"]
+
+    # def draw(self, window, game_settings):
+    #     if self.selected_piece is not None:
+    #         self.selected_circle.clicked = True
+    #         self.selected_circle.highlight = True
+    #         for valid_position in self.selected_piece.get_valid_moves(
+    #             self, previous_circle
+    #         ):
+    #             valid_position.circle.highlight = True
+
+    #     for circle in self.circles:
+    #         circle.draw(window, game_settings)
+    #     self.update_board(self.board_config, window)
 
     def eat_goats(
         self,
@@ -247,3 +236,27 @@ class Board:
                                     then can move if clicked
 
         """
+
+
+"""
+# logic to draw and highlight
+    def draw(self, display):
+        if self.selected_piece is not None:
+            self.get_square_from_pos(self.selected_piece.pos).highlight = True
+            for square in self.selected_piece.get_valid_moves(self):
+                square.highlight = True
+
+        for square in self.squares:
+            square.draw(display)
+# this is square.draw()
+    def draw(self, display):
+        if self.highlight:
+            pygame.draw.rect(display, self.highlight_color, self.rect)
+        else:
+            pygame.draw.rect(display, self.draw_color, self.rect)
+
+        if self.occupying_piece != None:
+            centering_rect = self.occupying_piece.img.get_rect()
+            centering_rect.center = self.rect.center
+            display.blit(self.occupying_piece.img, centering_rect.topleft)
+"""
