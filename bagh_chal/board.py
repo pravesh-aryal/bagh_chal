@@ -14,6 +14,7 @@ class Board:
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
         self.tigers_trapped = 0
         self.goats = 20
+        self.goats_killed = 0
         self.rect = pygame.Rect(
             0,
             0,
@@ -38,13 +39,18 @@ class Board:
         )
         self.board_config: list[list] = gm.board_config(self.coordinates, self.circles)
 
-        # self.check_for_occupancy(self.board_config, self.circles)
         gm.initialize_tigers(self, Tiger, self.board_config)
         (
             self.restricted_positions,
             self.unrestricted_positions,
         ) = gm.classify_coordinates(self.board_config)
+        self.check_for_occupancy(self.board_config, self.circles)
         self.update_board(self.board_config, window)
+
+    def check_for_occupancy(self, board_config, circles):
+        #     #     for circle, position in zip(circles, chain(*board_config)):
+        for circle, position in zip(circles, chain(*board_config)):
+            circle.occupying_piece = position.piece
 
     def handle_click(self, mx, my, window, game_settings) -> None:
         for circle in self.circles:
@@ -57,20 +63,16 @@ class Board:
 
                     # change the turn only if a valid move/placement is done.
 
-                elif self.turn == "g" and not self.goats:
-                    """MOVE EM GOATS baby"""
-                    pass
-                elif self.turn == "t":
-                    # and the circle should also contain a tiger i.e contains_tiger = True || has_tiger = True
+                else:
                     if self.selected_piece is None:
-                        circle.occupying_piece = self.board_config[circle.x][
-                            circle.y
-                        ].piece
-                        self.selected_circle = circle
-                        global previous_circle
-                        previous_circle = circle
-                        previous_circle.clicked = True
-                        self.selected_piece = circle.occupying_piece
+                        piece = self.board_config[circle.x][circle.y].piece
+                        if piece and (piece.notation == self.turn):
+                            # print(piece)
+                            self.selected_circle = circle
+                            global previous_circle
+                            previous_circle = circle
+                            previous_circle.clicked = True
+                            self.selected_piece = piece
 
                     elif self.selected_piece.move(
                         self,
@@ -80,14 +82,11 @@ class Board:
                         circle.y,
                         game_settings,
                         previous_circle,
-                        Tiger,
                         self.selected_piece,
+                        Goat,
+                        Tiger,
                     ):
                         self.turn = self.get_turn()
-
-                    elif circle.occupying_piece is not None:
-                        if circle.occupying_piece.notation == self.turn:
-                            self.selected_piece = circle.occupying_piece
 
         self.update_board(self.board_config, window)
 
@@ -137,86 +136,6 @@ class Board:
         self.tiger_group.draw(window)
         self.goat_group.draw(window)
 
-    # def check_for_occupancy(self, board_config, circles):
-    #     for circle, position in zip(circles, chain(*board_config)):
-    #         circle.occupying_piece = position["piece"]
-
-    # def draw(self, window, game_settings):
-    #     if self.selected_piece is not None:
-    #         self.selected_circle.clicked = True
-    #         self.selected_circle.highlight = True
-    #         for valid_position in self.selected_piece.get_valid_moves(
-    #             self, previous_circle
-    #         ):
-    #             valid_position.circle.highlight = True
-
-    #     for circle in self.circles:
-    #         circle.draw(window, game_settings)
-    #     self.update_board(self.board_config, window)
-
-    def eat_goats(
-        self,
-        circle,
-        previous_circle,
-        window,
-        x,
-        y,
-        valid_moves,
-    ):
-        print("can i eat goats")
-        # check if goat is located in any of the valid moves
-        for goat in self.goat_group:
-            print("guiye")
-            if (goat.x, goat.y) in [
-                valid_move["position"] for valid_move in valid_moves
-            ]:
-                print("uigete")
-                # now get valid positions for the goat
-                for position in self.restricted_positions:
-                    if (goat.x, goat.y) == position["position"]:
-                        print(position["valid_neighbours"])
-                        goat.valid_moves_for_goat = position["valid_neighbours"]
-                for position in self.unrestricted_positions:
-                    if (goat.x, goat.y) == position["position"]:
-                        print(position["valid_neighbours"])
-                        goat.valid_moves_for_goat = position["valid_neighbours"]
-        circle = previous_circle
-
-        # here circle is the tiger containing circle
-        for goat in self.goat_group:
-            print(goat.valid_moves_for_goat)
-            empty_pos = [
-                valid_move
-                for valid_move in goat.valid_moves_for_goat
-                if valid_move["piece"] == None
-            ]
-            for pos in empty_pos:
-                pos = pos["position"]
-                pos.x, pos.y = pos["position"]
-                if circle.x == goat.x == pos.x:
-                    valid_moves.append(pos)
-                elif circle.y == goat.y == pos.y:
-                    valid_moves.append(pos)
-                elif (circle.x + 1, circle.y + 1) == (goat.x, goat.y) and (
-                    goat.x + 1,
-                    goat.y + 1,
-                ) == pos:
-                    valid_moves.append(pos)
-                elif (circle.x - 1, circle.y - 1) == (goat.x, goat.y) and (
-                    goat.x - 1,
-                    goat.y - 1,
-                ) == pos:
-                    valid_moves.append(pos)
-                elif (circle.x + 1, circle.y - 1) == (goat.x, goat.y) and (
-                    goat.x + 1,
-                    goat.y - 1,
-                ) == pos:
-                    valid_moves.append(pos)
-                elif (circle.x - 1, circle.y + 1) == (goat.x, goat.y) and (
-                    goat.x - 1,
-                    goat.y + 1,
-                ) == pos:
-                    valid_moves.append(pos)
         """
         if turn == tiger:
             get valid positions from the tigers position

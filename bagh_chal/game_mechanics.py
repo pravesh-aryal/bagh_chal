@@ -110,7 +110,6 @@ def generate_circles(
                     pos_y,
                 )
             )
-            print(board_config)
     return circles
 
 

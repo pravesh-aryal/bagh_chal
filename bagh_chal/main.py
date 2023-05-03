@@ -39,7 +39,18 @@ def start_game():
                         window,
                         game_settings,
                     )
-
+                print(
+                    "tigers trapped",
+                    board.tigers_trapped,
+                    "\n goats killed",
+                    board.goats_killed,
+                )
+            elif board.tigers_trapped == 4:
+                print(board.tigers_trapped, "goat")
+                pygame.quit()
+            elif board.goats_killed == 8:
+                print(board.goats_killed, "tiger won")
+                pygame.quit()
                 # handling click
         # board.draw(window, game_settings)
         pygame.display.flip()
