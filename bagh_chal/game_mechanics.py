@@ -96,8 +96,8 @@ def generate_circles(
 ) -> list:
     circles = []
 
-    for row_coordinates, x in zip(coordinates, range(5)):
-        for each_coordinate, y in zip(row_coordinates, range(5)):
+    for row_coordinates, pos_x in zip(coordinates, range(5)):
+        for each_coordinate, pos_y in zip(row_coordinates, range(5)):
             # each_coordinate = center_of_each_cricle
             circles.append(
                 Circle(
@@ -106,12 +106,11 @@ def generate_circles(
                     each_coordinate,
                     tiger_group,
                     goat_group,
-                    x,
-                    y,
-                    board_config,
+                    pos_x,
+                    pos_y,
                 )
             )
-
+            print(board_config)
     return circles
 
 
@@ -151,6 +150,7 @@ def board_config(coordinates, circles):
                     circle,
                 )
             )
+
         config.append(_)
 
     return config

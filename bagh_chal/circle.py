@@ -7,31 +7,27 @@ from pygame.sprite import Sprite
 
 # every circle is a rect object modified to visualize as a circle
 class Circle(Sprite):
-    def __init__(
-        self, window, game_settings, center, tiger_group, goat_group, x, y, board_config
-    ):
+    """Circle class that works as a container for position, tiger or goats."""
+
+    def __init__(self, window, game_settings, center, tiger_group, goat_group, x, y):
         super(Circle, self).__init__()
-        self.x = x
-        self.y = y
+        self.x, self.pos_x = x, x
+        self.y, self.pos_y = y, y
         self.center = center  # abs_x, abs_y
         self.clicked = False
         self.highlight = False
         self.rect = pygame.Rect(*center, 80, 80)
         self.rect.center = center
-        # self.color = (
-        #     game_settings.CIRCLE_COLOR_DEFAULT
-        #     if not self.clicked
-        #     else game_settings.CIRCLE_COLOR_CLICKED
-        # )
-        self.color = game_settings.CIRCLE_COLOR_DEFAULT
-        self.image = ""
-        # self.highlight_color = game_settings.CIRCLE_COLOR_CLICKED
         self.draw(window, game_settings)
-
         self.occupying_piece = None
         self.highlight = False
-        self.coordinate = self.get_coordinate()
-        # self.check_for_occupancy()
+        # implementing position in circle class
+        # self.position = self.x, self.y
+        # self.coordinate = self.x, self.y
+        # self.abs_x, self.abs_y = self.center
+        # self.circle = self
+        # self.piece: object = None
+        # self.valid_neighbours: list[object] = None
 
     def draw(self, window, game_settings):
         pygame.draw.rect(
@@ -46,8 +42,3 @@ class Circle(Sprite):
 
     def get_coordinate(self):
         pass
-
-    # def check_for_occupancy(self, board_config):
-    #     for each_row in board_config:
-    #         for each_position in each_row:
-    #             self.occupying_piece = board_config["piece"]

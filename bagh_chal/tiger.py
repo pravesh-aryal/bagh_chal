@@ -19,6 +19,3 @@ class Tiger(Sprite, Piece):
         self.notation = "t"
         self.x, self.y = (x, y)
         self.isinwhatposition = None
-
-    # def update(self, pos_x, pos_y):
-    #     self.rect.center = pos_x, pos_y

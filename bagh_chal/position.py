@@ -2,11 +2,11 @@ import pygame, os
 from pygame.sprite import Sprite
 
 
-class Position(Sprite):
+class Position:
     """Piece class to manage behaviour of goats, tigers and empty positions; also works as a Piece position in board.config"""
 
     def __init__(self, x: int, y: int, abs_x: int, abs_y: int, circle: object):
-        super(Position, self).__init__()
+        # super(Position, self).__init__()
         self.x, self.y = x, y
         self.position = self.x, self.y
         self.coordinate = self.x, self.y

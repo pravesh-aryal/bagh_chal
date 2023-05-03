@@ -22,6 +22,7 @@ class Board:
         )
         # Place the Board at the center (as same as the window)
         self.rect.center = window_rect.center
+        # No piece, circle is selected at first
         self.is_piece_selected = False
         self.selected_circle: Circle = None
         self.selected_piece: object = None
@@ -80,6 +81,7 @@ class Board:
                         game_settings,
                         previous_circle,
                         Tiger,
+                        self.selected_piece,
                     ):
                         self.turn = self.get_turn()
 
@@ -98,11 +100,6 @@ class Board:
     def set_default_color(self, circles, game_settings, window):
         for circle in circles:
             circle.color = game_settings.CIRCLE_COLOR_DEFAULT
-            # if circle.clicked == True:
-            #     circle.clicked = False
-
-            # else:
-            #     circle.clicked = True
             circle.draw(window, game_settings)
 
     def set_bool(self, circles):

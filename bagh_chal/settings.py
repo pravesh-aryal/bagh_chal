@@ -1,7 +1,6 @@
-"""A class to store all the settings and values for the game."""
-
-
 class Settings:
+    """A class to store all the settings and values for the game."""
+
     def __init__(self) -> None:
         # Initialize settings for the game.
         # screen settings
@@ -20,3 +19,4 @@ class Settings:
         self.CIRCLE_RADIUS = 40
         self.CIRCLE_COLOR_DEFAULT = (220, 220, 220)
         self.CIRCLE_COLOR_CLICKED = (144, 238, 144)
+        self.CIRCLE_COLOR_HIGHLIGHT = (144, 238, 144)
