@@ -5,6 +5,23 @@ class Piece:
     def __init__(self):
         pass
 
+    def get_all_valid_moves(self, board, previous_circle, circle):
+        if board.turn == "g":
+            correct_moves = self.get_valid_moves(board, previous_circle, circle)
+            extra_correct_moves = []
+            correct_intermediate_moves = []
+        elif board.turn == "t":
+            correct_moves = self.get_valid_moves(board, previous_circle, circle)
+            (
+                extra_correct_moves,
+                correct_intermediate_moves,
+            ) = self.get_extra_valid_moves(
+                correct_moves,
+                board,
+                previous_circle,
+            )
+        return correct_moves, extra_correct_moves, correct_intermediate_moves
+
     def move(
         self,
         board,
@@ -19,11 +36,7 @@ class Piece:
         Tiger,
     ):
         """If selected piece ko notation is tiger then we get extra valid moves"""
-        # (valid_moves, extra_valid_moves, intermediate_moves) = self.get_valid_moves(
-        #     board, previous_circle, circle
-        # )
-        # valid_moves.extend(extra_valid_moves)
-        # this valid moves works both for tiger and goat
+
         valid_moves = self.get_valid_moves(board, previous_circle, circle)
         if (
             board.turn == "g"
@@ -46,13 +59,24 @@ class Piece:
             return True
 
         elif board.turn == "t":
+            if selected_piece in board.trapped_tigers:
+                x, y, z = self.get_all_valid_moves(board, previous_circle, circle)
+                if len(x) + len(y) + len(z) != 0:
+                    board.trapped_tigers.remove(selected_piece)
             # get those extra moves
+
             extra_valid_moves, intermediate_moves = self.get_extra_valid_moves(
                 valid_moves,
                 board,
                 previous_circle,
             )
             valid_moves.extend(extra_valid_moves)
+            if len(valid_moves) == 0:
+                # board.tigers_trapped += 1
+                # trapped_pieces = None
+                board.trapped_tigers.append(selected_piece)
+            # if selected_piece in trapped_tigers:
+
             if (circle.x, circle.y) in [
                 valid_move.position for valid_move in valid_moves
             ] and circle.occupying_piece == None:
@@ -168,6 +192,7 @@ class Piece:
                     extra_valid_moves,
                     valid_positions,
                 )
+
         return extra_valid_moves, intermediate_positions
 
     def check_for_intermediate_positions(

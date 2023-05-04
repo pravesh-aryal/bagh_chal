@@ -135,9 +135,29 @@ def generate_coordinates(board, game_settings) -> list:
     return coordinates
 
 
-def board_config(coordinates, circles):
+def board_config(coordinates, circles, Circle):
     # create Position object for each position
+    original_list = circles
+
+    new_list = []
+    for i in range(0, len(original_list), 5):
+        sublist = original_list[i : i + 5]
+        new_list.append(sublist)
+
+    circles = new_list
     config = []
+    # for x, circle in zip(range(5), circles):
+    #     _ = []
+    #     for y in range(5):
+    #         _.append(
+    #             Position(
+    #                 x,
+    #                 y,
+    #                 *coordinates[x][y],
+    #                 circle,
+    #             )
+    #         )
+
     for x, circle in zip(range(5), circles):
         _ = []
         for y in range(5):
@@ -146,10 +166,9 @@ def board_config(coordinates, circles):
                     x,
                     y,
                     *coordinates[x][y],
-                    circle,
+                    circles[x][y],
                 )
             )
-
         config.append(_)
 
     return config

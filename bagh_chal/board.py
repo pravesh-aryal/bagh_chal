@@ -12,6 +12,7 @@ class Board:
     def __init__(self, window, game_settings, window_rect, gm) -> None:
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
+        self.trapped_tigers = []
         self.tigers_trapped = 0
         self.goats = 20
         self.goats_killed = 0
@@ -37,7 +38,9 @@ class Board:
             self.tiger_group,
             self.goat_group,
         )
-        self.board_config: list[list] = gm.board_config(self.coordinates, self.circles)
+        self.board_config: list[list] = gm.board_config(
+            self.coordinates, self.circles, Circle
+        )
 
         gm.initialize_tigers(self, Tiger, self.board_config)
         (
@@ -52,11 +55,45 @@ class Board:
         for circle, position in zip(circles, chain(*board_config)):
             circle.occupying_piece = position.piece
 
+    def highlight_circles(
+        self, correct_moves, extra_correct_moves, correct_intermediate_moves
+    ):
+        if self.selected_piece is not None:
+            self.set_default_color(self.circles, 1, 1)
+            if correct_moves:
+                for correct_move in correct_moves:
+                    if correct_move.piece == None:
+                        correct_move.circle.color = (144, 238, 144)
+                        correct_move.circle.draw(1, 2)
+            if extra_correct_moves:
+                for extra_correct_move in extra_correct_moves:
+                    extra_correct_move.circle.color = (144, 238, 144)
+                    extra_correct_move.circle.draw(1, 2)
+            if correct_intermediate_moves:
+                for correct_intermediate_move in correct_intermediate_moves:
+                    if correct_intermediate_move.piece.notation == "g":
+                        correct_intermediate_move.circle.color = (255, 0, 0)
+                        correct_intermediate_move.circle.draw(1, 2)
+        # else:
+        #     self.set_default_color(self.circles, 1, 1)
+
+    # def check_for_trapped_tigers(self):
+    #     for position in chain(*self.board_config):
+    #         if (
+    #             position.piece
+    #             and position.piece.notation
+    #             and position.piece.notation == "t"
+    #         ):
+    #             # self.selected_piece.get_all_valid_moves(
+    #             #                 self, previous_circle, circle
+    #             #             )
+    #             position.piece.get_all_valid_moves(self, previous_circle, Circle)
+
     def handle_click(self, mx, my, window, game_settings) -> None:
         for circle in self.circles:
             if circle.rect.collidepoint(mx, my):
                 """LEAVE OUT THE HIGHLIGHT COLOR LOGIC FOR SOME TIME"""
-                self.set_default_color(self.circles, game_settings, window)
+                # self.set_default_color(self.circles, game_settings, window)
 
                 if self.turn == "g" and self.goats:
                     self.place_goat(circle, self.goat_group, window, circle.x, circle.y)
@@ -67,12 +104,24 @@ class Board:
                     if self.selected_piece is None:
                         piece = self.board_config[circle.x][circle.y].piece
                         if piece and (piece.notation == self.turn):
-                            # print(piece)
                             self.selected_circle = circle
                             global previous_circle
                             previous_circle = circle
                             previous_circle.clicked = True
                             self.selected_piece = piece
+                            (
+                                self.correct_moves,
+                                self.extra_correct_moves,
+                                self.correct_intermediate_moves,
+                            ) = self.selected_piece.get_all_valid_moves(
+                                self, previous_circle, circle
+                            )
+
+                            self.highlight_circles(
+                                self.correct_moves,
+                                self.extra_correct_moves,
+                                self.correct_intermediate_moves,
+                            )
 
                     elif self.selected_piece.move(
                         self,
@@ -86,7 +135,13 @@ class Board:
                         Goat,
                         Tiger,
                     ):
+                        self.set_default_color(self.circles, game_settings, window)
                         self.turn = self.get_turn()
+
+                    elif self.selected_piece is not None:
+                        self.set_default_color(self.circles, 1, 1)
+                        previous_circle.occupying_piece == circle.occupying_piece
+                        self.selected_piece = None
 
         self.update_board(self.board_config, window)
 
@@ -98,7 +153,7 @@ class Board:
 
     def set_default_color(self, circles, game_settings, window):
         for circle in circles:
-            circle.color = game_settings.CIRCLE_COLOR_DEFAULT
+            circle.color = (220, 220, 220)
             circle.draw(window, game_settings)
 
     def set_bool(self, circles):
