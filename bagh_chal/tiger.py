@@ -19,3 +19,4 @@ class Tiger(Sprite, Piece):
         self.notation = "t"
         self.x, self.y = (x, y)
         self.isinwhatposition = None
+        self.trapped = False

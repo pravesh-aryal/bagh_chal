@@ -41,10 +41,11 @@ def start_game():
                     )
                     print("trapped_tigers," "goats-killed")
                     print(len(board.trapped_tigers), board.goats_killed)
+                    print(board.trapped_tigers)
                 if len(board.trapped_tigers) == 4:
                     print("goat wins")
                     pygame.quit()
-                if board.goats_killed == 2:
+                if board.goats_killed == 8:
                     print(len(board.trapped_tigers), board.goats_killed)
                     print("tiger wins")
                     pygame.quit()
