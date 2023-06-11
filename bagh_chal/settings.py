@@ -21,3 +21,5 @@ class Settings:
         self.CIRCLE_COLOR_CLICKED = (144, 238, 144)
         self.CIRCLE_COLOR_HIGHLIGHT = (144, 238, 144)
         self.CIRCLE_COLOR_RED = (255, 0, 0)
+        self.CIRCLE_WIDTH = self.CIRCLE_HEIGHT = 80
+        self.CIRCLE_RADIUS = 75

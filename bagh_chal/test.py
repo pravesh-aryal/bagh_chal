@@ -1,25 +1,20 @@
-# circles = [1, 2, 3, 4, 5, 6]
-# board_config = [
-#     ["a", "b"],
-#     ["c", "d"],
-#     ["e", "f"],
-# ]
-# from itertools import chain
+starting_point = (0, 0)
+# length = game_settings.BOARD_WIDTH
+length = 600
 
+coordinates = []
+JUMP_VALUE = int(length / 4)
+x, y = starting_point
+# Creating 5 * 5 matrix
+for i in range(0, 5):
+    row = []
+    for j in range(0, 5):
+        row.append((x, y))
+        x += JUMP_VALUE
 
-# for circle, x in zip(circles, chain(*board_config)):
-#     print(circle, x)
-
-# for circle in circles:
-#     print(circle)
-
-# for x in chain(*board_config):
-#     print(x)
-
-
-def hey(x, y):
-    print(x, y)
-
-
-t = (1, 2)
-hey(*t)
+    coordinates.append(row)
+    x = starting_point[1]
+    y += JUMP_VALUE
+print(coordinates)
+for row in coordinates:
+    print(row)

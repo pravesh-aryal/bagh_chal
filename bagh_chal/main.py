@@ -39,9 +39,7 @@ def start_game():
                         window,
                         game_settings,
                     )
-                    print("trapped_tigers," "goats-killed")
-                    print(len(board.trapped_tigers), board.goats_killed)
-                    print(board.trapped_tigers)
+
                 if len(board.trapped_tigers) == 4:
                     print("goat wins")
                     pygame.quit()
@@ -50,8 +48,6 @@ def start_game():
                     print("tiger wins")
                     pygame.quit()
 
-                # handling click
-        # board.draw(window, game_settings)
         pygame.display.flip()
 
 

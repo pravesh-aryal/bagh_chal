@@ -12,8 +12,8 @@ class Board:
     def __init__(self, window, game_settings, window_rect, gm) -> None:
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
+        # to get number of trapped tigers we ll read length of the array
         self.trapped_tigers = []
-        self.tigers_trapped = 0
         self.goats = 20
         self.goats_killed = 0
         self.rect = pygame.Rect(
@@ -29,31 +29,32 @@ class Board:
         self.selected_circle: Circle = None
         self.selected_piece: object = None
         self.turn = "g"  # goat always has the first turn
-        self.coordinates: list[list] = gm.generate_coordinates(self, game_settings)
-        gm.initialize_board(window, game_settings, self, self.coordinates)
-        self.circles: list = gm.generate_circles(
-            window,
-            game_settings,
-            self.coordinates,
-            self.tiger_group,
-            self.goat_group,
-        )
-        self.board_config: list[list] = gm.board_config(
-            self.coordinates, self.circles, Circle
-        )
-
+        self.coordinates: list[list] = gm.generate_coordinates(self)
+        gm.initialize_board(window, self, self.coordinates)
+        self.circles: list[list] = gm.generate_circles(window, self.coordinates)
+        self.board_config: list[list] = self.circles
+        # board config shold be the self.circles with updated pieces at each instance of the game
         gm.initialize_tigers(self, Tiger, self.board_config)
         (
             self.restricted_positions,
             self.unrestricted_positions,
         ) = gm.classify_coordinates(self.board_config)
-        self.check_for_occupancy(self.board_config, self.circles)
+        self.restricted_positions = [
+            position for position in chain(self.board_config) if position.is_restricted
+        ]
+        self.unrestricted_positions = [
+            position
+            for position in chain(self.board_config)
+            if not position.is_restricted
+        ]
+        # self.check_for_occupancy(self.board_config, self.circles)
         self.update_board(self.board_config, window)
 
     def check_for_occupancy(self, board_config, circles):
         #     #     for circle, position in zip(circles, chain(*board_config)):
-        for circle, position in zip(circles, chain(*board_config)):
-            circle.occupying_piece = position.piece
+        # for circle, position in zip(circles, chain(*board_config)):
+        #     circle.occupying_piece = position.piece
+        pass
 
     def highlight_circles(
         self, correct_moves, extra_correct_moves, correct_intermediate_moves
@@ -74,35 +75,25 @@ class Board:
                     if correct_intermediate_move.piece.notation == "g":
                         correct_intermediate_move.circle.color = (255, 0, 0)
                         correct_intermediate_move.circle.draw(1, 2)
-        # else:
-        #     self.set_default_color(self.circles, 1, 1)
 
-    # def check_for_trapped_tigers(self):
-    #     for position in chain(*self.board_config):
-    #         if (
-    #             position.piece
-    #             and position.piece.notation
-    #             and position.piece.notation == "t"
-    #         ):
-    #             # self.selected_piece.get_all_valid_moves(
-    #             #                 self, previous_circle, circle
-    #             #             )
-    #             position.piece.get_all_valid_moves(self, previous_circle, Circle)
+    def handle_second_click() -> None:
+        pass
 
     def handle_click(self, mx, my, window, game_settings) -> None:
-        for circle in self.circles:
+        """this will handle the first click only"""
+        for circle in chain(*self.circles):
             if circle.rect.collidepoint(mx, my):
                 """LEAVE OUT THE HIGHLIGHT COLOR LOGIC FOR SOME TIME"""
                 # self.set_default_color(self.circles, game_settings, window)
 
-                if self.turn == "g" and self.goats:
-                    self.place_goat(circle, self.goat_group, window, circle.x, circle.y)
+                if self.turn == "g" and self.goats and circle.occuyping_piece is None:
+                    self.place_goat(circle, window)
 
                     # change the turn only if a valid move/placement is done.
 
                 else:
                     if self.selected_piece is None:
-                        piece = self.board_config[circle.x][circle.y].piece
+                        piece = circle.occupying_piece
                         if piece and (piece.notation == self.turn):
                             self.selected_circle = circle
                             global previous_circle
@@ -160,18 +151,13 @@ class Board:
         for circle in circles:
             circle.clicked = False
 
-    def place_goat(self, circle, goat_group, window, x, y):
-        if circle.occupying_piece == None:
-            goat = Goat(*circle.center, x, y)
-            goat_group.add(goat)
-            self.board_config[x][y].position = (x, y)
-            self.board_config[x][y].abs_position = circle.center
-            self.board_config[x][y].circle = circle
-            self.board_config[x][y].piece = goat
-            circle.occupying_piece = goat
-            self.turn = self.get_turn()
-            self.goats -= 1
-            self.update_board(self.board_config, window)
+    def place_goat(self, circle, window):
+        goat = Goat(circle.pos_x, circle.pos_y, *circle.center)
+        self.goat_group.add(goat)
+        circle.occupying_piece = goat
+        self.turn = self.get_turn()
+        self.goats -= 1
+        self.update_board(self.board_config, window)
 
     def get_turn(self):
         self.turn = "t" if self.turn == "g" else "g"
