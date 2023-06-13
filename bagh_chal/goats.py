@@ -13,5 +13,5 @@ class Goat(Sprite, Piece):
         self.rect.center = pos_x, pos_y
         self.is_selected = False
         self.notation = "g"
-        self.x, self.y = (x, y)
+        # self.x, self.y = (x, y)
         self.valid_moves_for_goat = None

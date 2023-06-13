@@ -191,9 +191,16 @@ def get_neighbour_pos(restricted_positions, unrestricted_positions, board_config
         unrestricted_position.valid_neighbours = valid_neighbours
 
 
-def get_valid_neighbours(circle):
-    valid_neighbours = []
-    if circle.is_restricted:
-        pass
-    else:
-        pass
+def get_valid_neighbours(circle, board_config):
+    for each_cirlce in chain(*board_config):
+        base_x, base_y = each_cirlce.pos_x, each_cirlce.pos_y
+        if circle.is_restricted:
+            if circle.pos in [
+                (base_x + 1, base_y),
+                (base_x, base_y + 1),
+                (base_x - 1, base_y),
+                (base_x, base_y - 1),
+            ]:
+                pass
+        elif not circle.is_restricted:
+            pass

@@ -22,86 +22,13 @@ class Piece:
             )
         return correct_moves, extra_correct_moves, correct_intermediate_moves
 
-    def move(
-        self,
-        board,
-        circle,
-        window,
-        x,
-        y,
-        game_settings,
-        previous_circle,
-        selected_piece,
-        Goat,
-        Tiger,
-    ):
-        """If selected piece ko notation is tiger then we get extra valid moves"""
-
-        valid_moves = self.get_valid_moves(board, previous_circle, circle)
-        if (
-            board.turn == "g"
-            and (circle.x, circle.y)
-            in [valid_move.position for valid_move in valid_moves]
-            and circle.occupying_piece == None
-        ):
-            board.goat_group.remove(selected_piece)
-            board.board_config[previous_circle.x][previous_circle.y].piece = None
-            previous_circle.occupying_piece = None
-            goat = Goat(*circle.center, x, y)
-            board.goat_group.add(goat)
-            board.board_config[x][y].position = (x, y)
-            board.board_config[x][y].abs_position = circle.center
-            board.board_config[x][y].circle = circle
-            board.board_config[x][y].piece = goat
-            circle.occupying_piece = goat
-            board.update_board(board.board_config, window)
-            board.selected_piece = None
-            return True
-
-        elif board.turn == "t":
-            if selected_piece in board.trapped_tigers:
-                x, y, z = self.get_all_valid_moves(board, previous_circle, circle)
-                if len(x) + len(y) + len(z) != 0:
-                    board.trapped_tigers.remove(selected_piece)
-            # get those extra moves
-
-            extra_valid_moves, intermediate_moves = self.get_extra_valid_moves(
-                valid_moves,
-                board,
-                previous_circle,
-            )
-            valid_moves.extend(extra_valid_moves)
-            if len(valid_moves) == 0:
-                # board.tigers_trapped += 1
-                # trapped_pieces = None
-                board.trapped_tigers.append(selected_piece)
-            # if selected_piece in trapped_tigers:
-
-            if (circle.x, circle.y) in [
-                valid_move.position for valid_move in valid_moves
-            ] and circle.occupying_piece == None:
-                board.tiger_group.remove(selected_piece)
-                board.board_config[previous_circle.x][previous_circle.y].piece = None
-                previous_circle.occupying_piece = None
-
-                tiger = Tiger(*circle.center, x, y)
-                board.tiger_group.add(tiger)
-                board.board_config[x][y].position = (x, y)
-                board.board_config[x][y].abs_position = circle.center
-                board.board_config[x][y].circle = circle
-                board.board_config[x][y].piece = tiger
-                circle.occupying_piece = tiger
-                self.goat_cascade(
-                    previous_circle,
-                    circle,
-                    intermediate_moves,
-                    board,
-                )
-                board.update_board(board.board_config, window)
-                board.selected_piece = None
-                return True
-            else:
-                board.tigers_trapped += 1
+    def move(selected_piece, previous_circle, next_circle, board_config):
+        previous_circle.occupying_piece = None
+        next_circle.occupyibg_piece = selected_piece
+        # now update the board
+        if selected_piece.notation == "t":
+            # if next_circle in selected_piece.goat_neighbour_and_extra_valid_move
+            selected_piece.check_and_kill(previous_circle, next_circle)
 
     def goat_cascade(
         self,

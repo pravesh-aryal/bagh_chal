@@ -29,7 +29,8 @@ class Circle(Sprite):
         self.draw(window)
         self.occupying_piece = None
         self.highlight = False
-        self.valid_neighbours = gm.get_valid_neighbours(self)
+        self.valid_neighbours = []
+        # self.valid_neighbours = gm.get_valid_neighbours(self)
 
     def draw(self, window):
         pygame.draw.rect(
