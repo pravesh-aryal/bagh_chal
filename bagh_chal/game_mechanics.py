@@ -1,20 +1,14 @@
+"""This file includes implementation for creating board and generating required values"""
 import sys
 import pygame
 from circle import Circle
 from itertools import chain
-from position import Position
+from settings import Settings
 
-# from typing import Dict
-
-# from board import Board
-# This has some "complex" implementation to abstract from the important code
+game_settings = Settings()
 
 
-def check_events():
-    pass
-
-
-def initialize_board(window, game_settings, board, coordinates) -> None:
+def initialize_board(window, board, coordinates) -> None:
     # Draw the main rectangle for the game board.
     pygame.draw.rect(window, game_settings.BOARD_COLOR, board.rect)
     vertical_coordinates, horizontal_coordinates = points_for_lines(coordinates)
@@ -36,7 +30,7 @@ def initialize_board(window, game_settings, board, coordinates) -> None:
             2,
         )
 
-    create_diagnols(window, game_settings, coordinates, board.rect)
+    create_diagnols(window, board.rect)
 
 
 def points_for_lines(coordinates) -> tuple:
@@ -55,11 +49,7 @@ def points_for_lines(coordinates) -> tuple:
     return vertical_coordinates, horizontal_coordinates
 
 
-def create_diagnols(window, game_settings, coordinates, board_rect):
-    # board_top_left_point = board_rect.topleft
-    # board_top_right_point = board_rect.topright
-    # board_bottom_left_point = board_rect.bottomleft
-    # board_bottom_right_point = board_rect.bottomright
+def create_diagnols(window, board_rect):
     pygame.draw.line(
         window,
         game_settings.LINE_COLOR,
@@ -89,105 +79,64 @@ def create_diagnols(window, game_settings, coordinates, board_rect):
 
 def generate_circles(
     window,
-    game_settings,
     coordinates,
-    tiger_group,
-    goat_group,
-) -> list:
+) -> list[list]:
     circles = []
 
-    for row_coordinates, pos_x in zip(coordinates, range(5)):
-        for each_coordinate, pos_y in zip(row_coordinates, range(5)):
-            # each_coordinate = center_of_each_cricle
-            circles.append(
+    for row_coordinates, pos_y in zip(coordinates, range(5)):
+        circle_row = []
+        for coordinate, pos_x in zip(row_coordinates, range(5)):
+            circle_row.append(
                 Circle(
                     window,
-                    game_settings,
-                    each_coordinate,
-                    tiger_group,
-                    goat_group,
+                    coordinate,
                     pos_x,
                     pos_y,
                 )
             )
+        circles.append(circle_row)
+
     return circles
 
 
-def generate_coordinates(board, game_settings) -> list:
-    # Coordinate of top left corner of the board in (x, y)
-    starting_point = (board.rect.left, board.rect.top)
+def generate_coordinates(board) -> list[list]:
+    # Coordinate of top left corner of the board in (x, y) (0,0)
+    x, y = (board.rect.left, board.rect.top)
     length = game_settings.BOARD_WIDTH
 
     coordinates = []
     JUMP_VALUE = int(length / 4)
-    x, y = starting_point
     # Creating 5 * 5 matrix
     for i in range(0, 5):
         row = []
         for j in range(0, 5):
             row.append((x, y))
-            y += JUMP_VALUE
+            x += JUMP_VALUE
 
         coordinates.append(row)
-        x += JUMP_VALUE
-        y = starting_point[1]
+        x = (
+            board.rect.left
+        )  # reinitializing value of x since x for each row should be same
+        y += JUMP_VALUE
 
     return coordinates
 
 
-def board_config(coordinates, circles, Circle):
-    # create Position object for each position
-    original_list = circles
-
-    new_list = []
-    for i in range(0, len(original_list), 5):
-        sublist = original_list[i : i + 5]
-        new_list.append(sublist)
-
-    circles = new_list
-    config = []
-    # for x, circle in zip(range(5), circles):
-    #     _ = []
-    #     for y in range(5):
-    #         _.append(
-    #             Position(
-    #                 x,
-    #                 y,
-    #                 *coordinates[x][y],
-    #                 circle,
-    #             )
-    #         )
-
-    for x, circle in zip(range(5), circles):
-        _ = []
-        for y in range(5):
-            _.append(
-                Position(
-                    x,
-                    y,
-                    *coordinates[x][y],
-                    circles[x][y],
-                )
-            )
-        config.append(_)
-
-    return config
-
-
-def initialize_tigers(board, Tiger, board_config):
-    # new
+def initialize_tigers(board, Tiger, board_config, tiger_group):
     for row in board_config:
         for position in row:
-            if position.abs_position in [
+            # each position is a cirlce obj
+            if position.abs_pos in [
                 board.rect.topleft,
                 board.rect.topright,
                 board.rect.bottomleft,
                 board.rect.bottomright,
             ]:
-                position.piece = Tiger(
-                    *position.abs_position,
-                    *position.position,
+                position.occupying_piece = Tiger(
+                    *position.pos,
+                    *position.abs_pos,
                 )
+                tiger_group.add(position.occupying_piece)
 
 
 def classify_coordinates(board_config):
@@ -196,18 +145,21 @@ def classify_coordinates(board_config):
     unrestricted_positions = []
 
     for row in board_config:
-        for position in row:
-            # position is an obj
-            x, y = position.coordinate
+        for circle in row:
+            x, y = circle.pos
             if (x + y) % 2 == 0:
-                unrestricted_positions.append(position)
+                unrestricted_positions.append(circle)
             else:
-                restricted_positions.append(position)
+                restricted_positions.append(circle)
 
-    # now defining neighbours for each of the two positions
+    get_neighbour_pos(restricted_positions, unrestricted_positions, board_config)
+    return restricted_positions, unrestricted_positions
+
+
+def get_neighbour_pos(restricted_positions, unrestricted_positions, board_config):
     for restricted_position in restricted_positions:
         valid_neighbours = []
-        base_x, base_y = restricted_position.position
+        base_x, base_y = restricted_position.pos
         for position in chain(*board_config):
             if position.position in [
                 (base_x + 1, base_y),
@@ -238,4 +190,17 @@ def classify_coordinates(board_config):
 
         unrestricted_position.valid_neighbours = valid_neighbours
 
-    return restricted_positions, unrestricted_positions
+
+def get_valid_neighbours(circle, board_config):
+    for each_cirlce in chain(*board_config):
+        base_x, base_y = each_cirlce.pos_x, each_cirlce.pos_y
+        if circle.is_restricted:
+            if circle.pos in [
+                (base_x + 1, base_y),
+                (base_x, base_y + 1),
+                (base_x - 1, base_y),
+                (base_x, base_y - 1),
+            ]:
+                pass
+        elif not circle.is_restricted:
+            pass

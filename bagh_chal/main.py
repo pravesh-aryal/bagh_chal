@@ -4,8 +4,6 @@ from pygame import Rect
 from board import Board
 from settings import Settings
 import game_mechanics as gm
-from circle import Circle
-from tiger import Tiger
 
 
 def start_game():
@@ -24,6 +22,7 @@ def start_game():
 
     # Create an instance of the class Board
     board = Board(window, game_settings, window_rect, gm)
+
     #
     while True:
         mx, my = pygame.mouse.get_pos()
@@ -37,20 +36,12 @@ def start_game():
                         mx,
                         my,
                         window,
-                        game_settings,
                     )
-                    print("trapped_tigers," "goats-killed")
-                    print(len(board.trapped_tigers), board.goats_killed)
+                board.check_for_trapped_tigers()
                 if len(board.trapped_tigers) == 4:
-                    print("goat wins")
                     pygame.quit()
-                if board.goats_killed == 2:
-                    print(len(board.trapped_tigers), board.goats_killed)
-                    print("tiger wins")
+                elif board.goats_killed == 9:
                     pygame.quit()
-
-                # handling click
-        # board.draw(window, game_settings)
         pygame.display.flip()
 
 

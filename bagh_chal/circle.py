@@ -1,45 +1,45 @@
 import pygame
 from pygame.sprite import Sprite
+from settings import Settings
 
-# from bagh_chal import tiger_group
-# from board import goat_group
+game_settings = Settings()
 
 
-# every circle is a rect object modified to visualize as a circle
 class Circle(Sprite):
-    """Circle class that works as a container for position, tiger or goats."""
+    """Circle class that works as a container for position, tiger or goat."""
 
-    def __init__(self, window, game_settings, center, tiger_group, goat_group, x, y):
+    def __init__(self, window, center, pos_x, pos_y):
         super(Circle, self).__init__()
-        self.x, self.pos_x = x, x
-        self.y, self.pos_y = y, y
-        self.position = self.x, self.y
-        self.center = center  # abs_x, abs_y
-        self.clicked = False
+        self.pos_x, self.pos_y = self.pos = pos_x, pos_y
+        self.x, self.y = self.pos_x, self.pos_y
+        self.position = self.pos
+        self.center = self.abs_pos = center  # abs_x, abs_y
         self.highlight = False
-        self.rect = pygame.Rect(*center, 80, 80)
+        self.rect = pygame.Rect(
+            *center, game_settings.CIRCLE_WIDTH, game_settings.CIRCLE_HEIGHT
+        )
+        self.is_restricted = False if (sum(self.pos)) % 2 == 0 else True
         self.rect.center = center
-        self.window = window
-        self.color = game_settings.CIRCLE_COLOR_DEFAULT
-        self.draw(window, game_settings)
+        self.draw(window)
         self.occupying_piece = None
         self.highlight = False
-        # implementing position in circle class
-        # self.position = self.x, self.y
-        # self.coordinate = self.x, self.y
-        # self.abs_x, self.abs_y = self.center
-        # self.circle = self
-        # self.piece: object = None
-        # self.valid_neighbours: list[object] = None
+        self.valid_neighbours = []
 
-    def draw(self, window, game_settings):
+    def draw(self, window):
+        if self.highlight:
+            self.color = game_settings.CIRCLE_COLOR_HIGHLIGHT
+        if (
+            self.highlight
+            and self.occupying_piece
+            and self.occupying_piece.notation == "g"
+        ):
+            self.color = game_settings.CIRCLE_COLOR_RED
+        if not self.highlight:
+            self.color = game_settings.CIRCLE_COLOR_DEFAULT
         pygame.draw.rect(
-            self.window,
+            window,
             self.color,
             self.rect,
             0,
-            75,
+            game_settings.CIRCLE_RADIUS,
         )
-
-    def get_coordinate(self):
-        pass

@@ -1,25 +1,16 @@
-# circles = [1, 2, 3, 4, 5, 6]
-# board_config = [
-#     ["a", "b"],
-#     ["c", "d"],
-#     ["e", "f"],
-# ]
-# from itertools import chain
+class Circle:
+    def __init__(self, x, y) -> None:
+        self.x = 90
+        self.y = 100
 
 
-# for circle, x in zip(circles, chain(*board_config)):
-#     print(circle, x)
+class Tiger(Circle):
+    def __init__(self, x, y) -> None:
+        super().__init__(x, y)
 
-# for circle in circles:
-#     print(circle)
-
-# for x in chain(*board_config):
-#     print(x)
+    # def __init__(self):
+    #     self.name = "tiger"
 
 
-def hey(x, y):
-    print(x, y)
-
-
-t = (1, 2)
-hey(*t)
+t = Tiger()
+print(t.x)
