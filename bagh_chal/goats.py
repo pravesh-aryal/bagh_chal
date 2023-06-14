@@ -10,8 +10,9 @@ class Goat(Sprite, Piece):
         Sprite.__init__(Goat)
         self.image = pygame.image.load(Path("./images/goat.png"))
         self.rect = self.image.get_rect()
-        self.rect.center = pos_x, pos_y
+        self.rect.center = abs_pos_x, abs_pos_y
         self.is_selected = False
         self.notation = "g"
         # self.x, self.y = (x, y)
         self.valid_moves_for_goat = None
+        self.pos_x, self.pos_y = pos_x, pos_y

@@ -1,28 +1,16 @@
-# class Animal:
-#     def __init__(self) -> None:
-#         self.name = "ANIMAL IS MY NAME"
+class Circle:
+    def __init__(self, x, y) -> None:
+        self.x = 90
+        self.y = 100
 
 
-# dog = Animal()
-# print(dog)
+class Tiger(Circle):
+    def __init__(self, x, y) -> None:
+        super().__init__(x, y)
 
-# dog.breed = "Husky"
-# print(dog)
-# print(dog.breed)
-# print(Animal.name)
-
-
-def is_valid_move(func):
-    def inner(x):
-        if func() == 5:
-            return True
-
-    return inner
+    # def __init__(self):
+    #     self.name = "tiger"
 
 
-@is_valid_move
-def move(destination):
-    print("VALID MOVE IS MADE")
-
-
-move(5)
+t = Tiger()
+print(t.x)

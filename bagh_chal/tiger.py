@@ -19,86 +19,99 @@ class Tiger(Sprite, Piece):
         self.pos_x, self.pos_y = pos_x, pos_y
         self.isinwhatposition = None
         self.trapped = False
+        self.additional_moves = []
 
-    def get_all_valid_moves(self, previous_circle, next_circle, board_config):
-        additional_valid_moves = []
+    def check_if_trapped(self, circle):
+        pass
+
+    def get_all_valid_moves(self, previous_circle):
+        additional_valid_moves = []  # moves that can kill goats
         previous_circle_neighbours = previous_circle.valid_neighbours
         goat_neighbours = []
         goat_neighbour_and_extra_valid_move = {}
         for neighbour in previous_circle_neighbours:
-            if neighbour.occupying_piece.notation == "g":
+            if neighbour.occupying_piece and neighbour.occupying_piece.notation == "g":
                 goat_neighbours.append(neighbour)
 
         for goat_neighbour in goat_neighbours:
             for valid_for_goat_position in goat_neighbour.valid_neighbours:
                 # previous circle == clicked circle
-                if previous_circle.x == valid_for_goat_position.x == goat_neighbour.x:
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                if valid_for_goat_position.occupying_piece == None:
+                    if (
+                        previous_circle.x
+                        == valid_for_goat_position.x
+                        == goat_neighbour.x
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-                elif previous_circle.y == valid_for_goat_position.y == goat_neighbour.y:
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                    elif (
+                        previous_circle.y
+                        == valid_for_goat_position.y
+                        == goat_neighbour.y
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-                elif (previous_circle.x + 1, previous_circle.y + 1) == (
-                    goat_neighbour.x,
-                    goat_neighbour.y,
-                ) and (goat_neighbour.x + 1, goat_neighbour.y + 1) == (
-                    valid_for_goat_position.x,
-                    valid_for_goat_position.y,
-                ):
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                    elif (previous_circle.x + 1, previous_circle.y + 1) == (
+                        goat_neighbour.x,
+                        goat_neighbour.y,
+                    ) and (goat_neighbour.x + 1, goat_neighbour.y + 1) == (
+                        valid_for_goat_position.x,
+                        valid_for_goat_position.y,
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-                elif (previous_circle.x - 1, previous_circle.y - 1) == (
-                    goat_neighbour.x,
-                    goat_neighbour.y,
-                ) and (goat_neighbour.x - 1, goat_neighbour.y - 1) == (
-                    valid_for_goat_position.x,
-                    valid_for_goat_position.y,
-                ):
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                    elif (previous_circle.x - 1, previous_circle.y - 1) == (
+                        goat_neighbour.x,
+                        goat_neighbour.y,
+                    ) and (goat_neighbour.x - 1, goat_neighbour.y - 1) == (
+                        valid_for_goat_position.x,
+                        valid_for_goat_position.y,
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-                elif (previous_circle.x + 1, previous_circle.y - 1) == (
-                    goat_neighbour.x,
-                    goat_neighbour.y,
-                ) and (goat_neighbour.x + 1, goat_neighbour.y - 1) == (
-                    valid_for_goat_position.x,
-                    valid_for_goat_position.y,
-                ):
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                    elif (previous_circle.x + 1, previous_circle.y - 1) == (
+                        goat_neighbour.x,
+                        goat_neighbour.y,
+                    ) and (goat_neighbour.x + 1, goat_neighbour.y - 1) == (
+                        valid_for_goat_position.x,
+                        valid_for_goat_position.y,
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-                elif (previous_circle.x - 1, previous_circle.y + 1) == (
-                    goat_neighbour.x,
-                    goat_neighbour.y,
-                ) and (goat_neighbour.x - 1, goat_neighbour.y + 1) == (
-                    valid_for_goat_position.x,
-                    valid_for_goat_position.y,
-                ):
-                    additional_valid_moves.append(valid_for_goat_position)
-                    goat_neighbour_and_extra_valid_move[
-                        goat_neighbour
-                    ] = valid_for_goat_position
+                    elif (previous_circle.x - 1, previous_circle.y + 1) == (
+                        goat_neighbour.x,
+                        goat_neighbour.y,
+                    ) and (goat_neighbour.x - 1, goat_neighbour.y + 1) == (
+                        valid_for_goat_position.x,
+                        valid_for_goat_position.y,
+                    ):
+                        additional_valid_moves.append(valid_for_goat_position)
+                        goat_neighbour_and_extra_valid_move[
+                            goat_neighbour
+                        ] = valid_for_goat_position
 
-        previous_circle.occupying_piece.additional_moves = additional_valid_moves
-        previous_circle.occupying_piece.goat_and_moves = (
-            goat_neighbour_and_extra_valid_move
-        )
+        self.additional_moves = additional_valid_moves
+        self.goat_and_moves = goat_neighbour_and_extra_valid_move
+
         return additional_valid_moves
 
-    def kill_goat(self, previous_circle, next_circle):
+    def check_and_kill(self, previous_circle, next_circle, goat_group):
         for goat_circle, empty_circle in self.goat_and_moves.items():
             if next_circle == empty_circle:
+                goat_group.remove(goat_circle.occupying_piece)
                 goat_circle.occupying_piece = None

@@ -80,8 +80,6 @@ def create_diagnols(window, board_rect):
 def generate_circles(
     window,
     coordinates,
-    tiger_group,
-    goat_group,
 ) -> list[list]:
     circles = []
 
@@ -91,7 +89,6 @@ def generate_circles(
             circle_row.append(
                 Circle(
                     window,
-                    game_settings,
                     coordinate,
                     pos_x,
                     pos_y,
@@ -117,13 +114,15 @@ def generate_coordinates(board) -> list[list]:
             x += JUMP_VALUE
 
         coordinates.append(row)
-        x = 0  # reinitializing value of x to 0 since x for each row should be same
+        x = (
+            board.rect.left
+        )  # reinitializing value of x since x for each row should be same
         y += JUMP_VALUE
 
     return coordinates
 
 
-def initialize_tigers(board, Tiger, board_config):
+def initialize_tigers(board, Tiger, board_config, tiger_group):
     for row in board_config:
         for position in row:
             # each position is a cirlce obj
@@ -137,6 +136,7 @@ def initialize_tigers(board, Tiger, board_config):
                     *position.pos,
                     *position.abs_pos,
                 )
+                tiger_group.add(position.occupying_piece)
 
 
 def classify_coordinates(board_config):

@@ -1,7 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
 from settings import Settings
-import game_mechanics as gm
 
 game_settings = Settings()
 
@@ -13,6 +12,8 @@ class Circle(Sprite):
     def __init__(self, window, center, pos_x, pos_y):
         super(Circle, self).__init__()
         self.pos_x, self.pos_y = self.pos = pos_x, pos_y
+        self.x, self.y = self.pos_x, self.pos_y
+        self.position = self.pos
         self.center = self.abs_pos = center  # abs_x, abs_y
         self.clicked = False
         self.highlight = False
