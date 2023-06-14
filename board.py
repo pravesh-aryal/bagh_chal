@@ -15,7 +15,7 @@ class Board:
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
         # remaining goats
-        self.goats = 2
+        self.goats = 20
         self.goats_killed = 0
         self.rect = pygame.Rect(
             0,

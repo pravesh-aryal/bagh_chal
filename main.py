@@ -39,8 +39,10 @@ def start_game():
                     )
                 board.check_for_trapped_tigers()
                 if len(board.trapped_tigers) == 4:
+                    print("Goat wins")
                     pygame.quit()
                 elif board.goats_killed == 9:
+                    print("Tiger wins")
                     pygame.quit()
         pygame.display.flip()
 
