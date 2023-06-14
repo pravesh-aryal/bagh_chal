@@ -14,7 +14,6 @@ class Board:
 
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
-        self.trapped_tigers = []
         # remaining goats
         self.goats = 20
         self.goats_killed = 0
@@ -50,98 +49,75 @@ class Board:
         ]
         gm.classify_coordinates(self.board_config)
         self.window = window
-        # self.check_for_occupancy(self.board_config, self.circles)
         self.update_board(window)
-
-    def handle_second_click(self, previous_circle, next_circle, selected_piece) -> None:
-        # this will handle second click
-
-        if next_circle in previous_circle.valid_neighbours and self.turn == "g":
-            # move the selected goati
-            selected_piece.move(previous_circle, next_circle)
-
-        elif self.turn == "t" and next_circle in [
-            *previous_circle.valid_neighbours,
-            *selected_piece.additional_moves,
-        ]:
-            selected_piece.move(
-                selected_piece,
-                previous_circle,
-                next_circle,
-                self.board_config,
-                Tiger,
-                self.tiger_group,
-                self.goat_group,
-            )
-            self.get_turn()
-        self.update_board(self.window)
-        # pygame.display.flip()
 
     def get_circle_from_pos(self, pos_x, pos_y):
         for circle in chain(*self.circles):
             if (pos_x, pos_y) == (circle.pos_x, circle.pos_y):
                 return circle
 
+    def highlight_circles(self, circles, killable_goats):
+        for circle in circles:
+            circle.highlight = True
+            circle.draw(self.window)
+        for killable_goat in killable_goats.keys():
+            killable_goat.highlight = True
+            print(killable_goat.position)
+            circle.draw(self.window)
+
     def handle_click(self, mx, my, window) -> None:
-        """this will handle the first click only"""
         for circle in chain(*self.circles):
             if circle.rect.collidepoint(mx, my):
-                """LEAVE OUT THE HIGHLIGHT COLOR LOGIC FOR SOME TIME"""
-                if self.turn == "g" and self.goats and circle.occupying_piece is None:
-                    pass  # place the goat
-                elif (
-                    self.turn == "g"
-                    and not self.goats
-                    and circle.occupying_piece == "g"
-                ):
-                    pass  # Move the goat
-                elif self.turn == "t" and circle.occupying_piece.notation == "t":
-                    pass  # move the tiger
-                # self.set_default_color(self.circles, game_settings, window)
-                # if any of the goat is remaining, the player must place the goat before moving any of the goat
+                # Player must  place 20 goats at first
                 if self.turn == "g" and self.goats and circle.occupying_piece is None:
                     self.place_goat(circle, window)
-                    # change the turn after placing
+                    # change the turn after placement
                     self.get_turn()
 
-                    # change the turn only if a valid move/placement is done.
-                # if all 20 goats have already been placed the user should move one of the goats
-
+                # if all 20 goats have already been placed the user should move one of the goats or another player should move the tiger
+                elif self.turn == "g" and self.goats != 0:
+                    pass
                 elif (
                     circle.occupying_piece
                     and circle.occupying_piece.notation == self.turn
                     and self.selected_piece is None
                 ):
-                    # this executes on the first click
+                    # On first click
                     self.selected_piece = circle.occupying_piece
                     global previous_circle
                     previous_circle = self.get_circle_from_pos(
                         self.selected_piece.pos_x, self.selected_piece.pos_y
                     )
-                    if self.selected_piece.notation == "t":
-                        self.selected_piece.get_all_valid_moves(previous_circle)
+                    valid_moves, killable_goats = self.selected_piece.get_valid_moves(
+                        previous_circle
+                    )
+                    self.highlight_circles(valid_moves, killable_goats)
 
                 elif circle.occupying_piece is self.selected_piece:
+                    # If same piece is clicked for the second time we unselect it
                     self.selected_piece = None
+                    self.set_default_color()
 
                 elif self.selected_piece is not None:
-                    # this executes on the second click
-                    # this means a piece is now selected and now we need to handle the second click
-
-                    self.handle_second_click(
-                        previous_circle, circle, self.selected_piece
-                    )
+                    # On second click
+                    if self.selected_piece.move(
+                        previous_circle, circle, self.goat_group, self.tiger_group, self
+                    ):
+                        self.get_turn()
+                        self.selected_piece = None
+                        self.set_default_color()
         self.update_board(window)
 
-    def set_default_color(self, circles, game_settings, window):
-        for circle in circles:
-            circle.color = (220, 220, 220)
-            circle.draw(window, game_settings)
+    def set_default_color(self):
+        for circle in chain(*self.circles):
+            circle.highlight = False
+            circle.draw(self.window)
 
     def place_goat(self, circle, window):
         goat = Goat(circle.pos_x, circle.pos_y, *circle.center)
         self.goat_group.add(goat)
         circle.occupying_piece = goat
+        print(circle.occupying_piece, circle.position)
         self.goats -= 1
         self.update_board(window)
 
@@ -150,18 +126,16 @@ class Board:
         return self.turn
 
     def update_board(self, window):
-        # for circle in chain(*self.board_config):
-        #     if circle.occupying_piece and circle.occupying_piece.notation == "t":
-        #         self.tiger_group.add(circle.occupying_piece)
-        #     elif circle.occupying_piece and circle.occupying_piece.notation == "g":
-        #         self.goat_group.add(circle.occupying_piece)
-        print("ONE ITER", len(self.circle_group))
-        for tiger in self.tiger_group:
-            print(tiger.pos_x, tiger.pos_y)
-        # self.circle_group.draw(window)
         for circle in chain(*self.circles):
             circle.draw(self.window)
         self.tiger_group.draw(window)
-
         self.goat_group.draw(window)
-        # pygame.display.flip()
+
+    def check_for_trapped_tigers(self):
+        self.trapped_tigers = []
+        for tiger in self.tiger_group:
+            valid_moves = tiger.get_valid_moves(
+                self.get_circle_from_pos(tiger.pos_x, tiger.pos_y)
+            )
+            if len(valid_moves) == 0:
+                self.trapped_tigers.append(tiger)
