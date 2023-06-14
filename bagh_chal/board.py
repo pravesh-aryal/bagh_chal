@@ -15,7 +15,7 @@ class Board:
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
         # remaining goats
-        self.goats = 20
+        self.goats = 2
         self.goats_killed = 0
         self.rect = pygame.Rect(
             0,
@@ -88,6 +88,7 @@ class Board:
                     previous_circle = self.get_circle_from_pos(
                         self.selected_piece.pos_x, self.selected_piece.pos_y
                     )
+
                     valid_moves, killable_goats = self.selected_piece.get_valid_moves(
                         previous_circle
                     )

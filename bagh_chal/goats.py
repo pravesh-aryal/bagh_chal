@@ -23,6 +23,7 @@ class Goat(Sprite):
             next_goat = Goat(*next_circle.position, *next_circle.center)
             goat_group.add(next_goat)
             next_circle.occupying_piece = next_goat
+            return True
 
     def get_valid_moves(self, previous_circle):
         self.valid_moves = [
