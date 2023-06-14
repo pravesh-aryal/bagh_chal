@@ -1,5 +1,5 @@
 # Bagh Chal (Tiger-Goat) game
-** Bagh chal game made using python3 and pygame**
+**Bagh chal game made using python3 and pygame**
 
 ### Activate the virtual environment
 ```pipenv shell```
