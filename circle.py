@@ -21,6 +21,7 @@ class Circle(Sprite):
         self.is_restricted = False if (sum(self.pos)) % 2 == 0 else True
         self.rect.center = center
         self.draw(window)
+        self.color = []
         self.occupying_piece = None
         self.highlight = False
         self.valid_neighbours = []

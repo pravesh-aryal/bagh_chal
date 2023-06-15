@@ -19,7 +19,7 @@ class Goat(Sprite):
     def move(self, previous_circle, next_circle, goat_group, tiger_group, board):
         if next_circle in self.valid_moves:
             goat_group.remove(previous_circle.occupying_piece)
-            previous_circle.occupying_piece == None
+            previous_circle.occupying_piece = None
             next_goat = Goat(*next_circle.position, *next_circle.center)
             goat_group.add(next_goat)
             next_circle.occupying_piece = next_goat

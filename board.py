@@ -15,7 +15,7 @@ class Board:
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
         self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
         # remaining goats
-        self.goats = 20
+        self.goats = 2
         self.goats_killed = 0
         self.rect = pygame.Rect(
             0,
@@ -56,13 +56,14 @@ class Board:
             if (pos_x, pos_y) == (circle.pos_x, circle.pos_y):
                 return circle
 
-    def highlight_circles(self, circles, killable_goats):
+    def highlight_circles(self, circles, killable_goats, current_circle):
+        current_circle.highlight = True
+        current_circle.draw(self.window)
         for circle in circles:
             circle.highlight = True
             circle.draw(self.window)
         for killable_goat in killable_goats.keys():
             killable_goat.highlight = True
-            print(killable_goat.position)
             circle.draw(self.window)
 
     def handle_click(self, mx, my, window) -> None:
@@ -92,7 +93,7 @@ class Board:
                     valid_moves, killable_goats = self.selected_piece.get_valid_moves(
                         previous_circle
                     )
-                    self.highlight_circles(valid_moves, killable_goats)
+                    self.highlight_circles(valid_moves, killable_goats, circle)
 
                 elif circle.occupying_piece is self.selected_piece:
                     # If same piece is clicked for the second time we unselect it
