@@ -14,23 +14,20 @@ class Goat(Sprite):
         self.notation = "g"
         # self.x, self.y = (x, y)
         self.valid_moves_for_goat = None
-        self.pos_x, self.pos_y = pos_x, pos_y
+        self.pos_x,  self.pos_y = self.pos =  pos_x, pos_y
 
     def move(self, previous_circle, next_circle, goat_group, tiger_group, board):
-        if next_circle in self.valid_moves:
+  
+        if next_circle in self.get_valid_moves(previous_circle)[0]:
             goat_group.remove(previous_circle.occupying_piece)
             previous_circle.occupying_piece = None
             next_goat = Goat(*next_circle.position, *next_circle.center)
-            goat_group.add(next_goat)
+            goat_group.append(next_goat)
             next_circle.occupying_piece = next_goat
             return True
 
     def get_valid_moves(self, previous_circle):
-        self.valid_moves = [
-            valid_move
-            for valid_move in previous_circle.valid_neighbours
-            if valid_move.occupying_piece is None
-        ]
+
 
         return (
             [

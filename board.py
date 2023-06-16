@@ -13,7 +13,8 @@ class Board:
         # to get number of trapped tigers we ll read length of the array
 
         self.tiger_group: pygame.sprite.Group = pygame.sprite.Group()
-        self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
+        # self.goat_group: pygame.sprite.Group = pygame.sprite.Group()
+        self.goat_group = []
         # remaining goats
         self.goats = 2
         self.goats_killed = 0
@@ -117,7 +118,8 @@ class Board:
 
     def place_goat(self, circle, window):
         goat = Goat(circle.pos_x, circle.pos_y, *circle.center)
-        self.goat_group.add(goat)
+        # self.goat_group.add(goat)
+        self.goat_group.append(goat)
         circle.occupying_piece = goat
         print(circle.occupying_piece, circle.position)
         self.goats -= 1
@@ -131,7 +133,9 @@ class Board:
         for circle in chain(*self.circles):
             circle.draw(self.window)
         self.tiger_group.draw(window)
-        self.goat_group.draw(window)
+        for goat in self.goat_group:
+            window.blit(goat.image, goat.rect)
+
 
     def check_for_trapped_tigers(self):
         self.trapped_tigers = []
