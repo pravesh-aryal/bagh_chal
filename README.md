@@ -5,7 +5,8 @@ This project is a digital implementation of Bagh Chal using **Python** and **Pyg
 ##  Demo
 Watch the demo:
 
-https://github.com/user-attachments/assets/abd4d9f7-5224-46a6-b143-19b1e1138d99
+https://github.com/user-attachments/assets/043f99a9-354c-4612-977c-88de2aec34ea
+
 
 
 ##  Features
