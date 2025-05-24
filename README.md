@@ -3,8 +3,10 @@
 This project is a digital implementation of Bagh Chal using **Python** and **Pygame**.
 
 ##  Demo
-Watch the demo here:  
-[Demo Video](//your-demo-link-here)
+Watch the demo:
+
+https://github.com/user-attachments/assets/abd4d9f7-5224-46a6-b143-19b1e1138d99
+
 
 ##  Features
 - Complete playable version of Bagh Chal (single-device play)
